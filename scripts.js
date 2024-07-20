@@ -25,6 +25,7 @@ const activityIcons = {
     document.getElementById('currentPunches').innerText = `Current Punches: ${status.currentPunches}`;
     document.getElementById('unredeemedPunchcards').innerText = `Unredeemed Punchcards: ${status.unredeemedPunchcards}`;
     document.getElementById('redeemedPunchcards').innerText = `Redeemed Punchcards: ${status.redeemedPunchcards}`;
+    document.getElementById('redeemButton').disabled = status.unredeemedPunchcards === 0;
   };
   
   const updateHistory = (history) => {
@@ -104,90 +105,75 @@ const activityIcons = {
   };
   
   const addPunch = async () => {
-    const activity = document.getElementById('activityDropdown').value;
-    await fetch('/api/punch', {
+    const activityDropdown = document.getElementById('activityDropdown');
+    const activity = activityDropdown.value;
+    await fetch('/api/add-punch', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ activity })
     });
-    fetchData();
+    await fetchData();
   };
   
   const redeemReward = async () => {
-    const reward = document.getElementById('rewardDropdown').value;
-    await fetch('/api/reward', {
+    const rewardDropdown = document.getElementById('rewardDropdown');
+    const reward = rewardDropdown.value;
+    await fetch('/api/redeem-reward', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reward })
     });
-    fetchData();
-  };
-  
-  const editEntry = async (id) => {
-    // Implement edit functionality if needed
+    await fetchData();
   };
   
   const deleteEntry = async (id) => {
-    await fetch(`/api/history/${id}`, {
-      method: 'DELETE'
-    });
-    fetchData();
+    await fetch(`/api/delete-entry/${id}`, { method: 'DELETE' });
+    await fetchData();
   };
   
-  const openTab = (evt, tabName) => {
-    const tabContents = document.querySelectorAll('.tab-content');
-    const tabButtons = document.querySelectorAll('.tab-button');
-  
-    tabContents.forEach(tabContent => {
-      tabContent.classList.remove('active');
-    });
-  
-    tabButtons.forEach(tabButton => {
-      tabButton.classList.remove('active');
-    });
-  
-    document.getElementById(tabName).classList.add('active');
-    evt.currentTarget.classList.add('active');
+  const editEntry = (id) => {
+    // Edit functionality can be implemented here
   };
   
-  // Populate dropdowns and activity buttons
-  document.addEventListener('DOMContentLoaded', () => {
+  const openTab = (event, tabName) => {
+    const tabContents = document.getElementsByClassName('tab-content');
+    for (let i = 0; i < tabContents.length; i++) {
+      tabContents[i].style.display = 'none';
+    }
+  
+    const tabButtons = document.getElementsByClassName('tab-button');
+    for (let i = 0; i < tabButtons.length; i++) {
+      tabButtons[i].classList.remove('active');
+    }
+  
+    document.getElementById(tabName).style.display = 'block';
+    event.currentTarget.classList.add('active');
+  };
+  
+  const initDropdowns = () => {
     const activityDropdown = document.getElementById('activityDropdown');
     const rewardDropdown = document.getElementById('rewardDropdown');
-    const activityButtons = document.getElementById('activityButtons');
   
-    Object.keys(activityIcons).forEach(activity => {
-      if (activity !== 'other') {
-        const option = document.createElement('option');
-        option.value = activity;
-        option.innerText = activity.charAt(0).toUpperCase() + activity.slice(1);
-        activityDropdown.appendChild(option);
-      }
+    const activityOptions = ['walk', 'run', 'hike', 'dance', 'snowboarding', 'stairs', 'other'];
+    const rewardOptions = ['pie', 'brownies', 'cookies', 'boba', 'candy', 'smoothies', 'other'];
+  
+    activityOptions.forEach(option => {
+      const opt = document.createElement('option');
+      opt.value = option;
+      opt.innerHTML = `${activityIcons[option]} ${option.charAt(0).toUpperCase() + option.slice(1)}`;
+      activityDropdown.appendChild(opt);
     });
   
-    Object.keys(rewardIcons).forEach(reward => {
-      if (reward !== 'other') {
-        const option = document.createElement('option');
-        option.value = reward;
-        option.innerText = reward.charAt(0).toUpperCase() + reward.slice(1);
-        rewardDropdown.appendChild(option);
-      }
+    rewardOptions.forEach(option => {
+      const opt = document.createElement('option');
+      opt.value = option;
+      opt.innerHTML = `${rewardIcons[option]} ${option.charAt(0).toUpperCase() + option.slice(1)}`;
+      rewardDropdown.appendChild(opt);
     });
+  };
   
-    ['gym', 'pickleball', 'yoga'].forEach(activity => {
-      const button = document.createElement('button');
-      button.innerHTML = `${activityIcons[activity]} ${activity.charAt(0).toUpperCase() + activity.slice(1)}`;
-      button.onclick = () => {
-        document.getElementById('activityDropdown').value = activity;
-        addPunch();
-      };
-      activityButtons.appendChild(button);
-    });
-  
-    fetchData();
+  document.addEventListener('DOMContentLoaded', async () => {
+    initDropdowns();
+    await fetchData();
   });
   

@@ -1,57 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gym Punchcard</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Punchcard</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Gym Punchcard</h1>
-    <div id="currentPunches">Current Punches: 0</div>
-    <div id="unredeemedPunchcards">Unredeemed Punchcards: 0</div>
-    <div id="redeemedPunchcards">Redeemed Punchcards: 0</div>
-
-    <div id="activityButtons" class="activity-buttons"></div>
-
-    <div class="activity-reward-section">
-      <div class="dropdown-container">
-        <select id="activityDropdown" class="dropdown">
-          <!-- Options will be populated by JavaScript -->
-        </select>
-        <input type="text" id="activity" placeholder="Enter activity" style="display: none;">
-      </div>
-      <div class="button-container">
-        <button onclick="addPunch()">Add Punch</button>
-      </div>
-      <div class="dropdown-container">
-        <select id="rewardDropdown" class="dropdown">
-          <!-- Options will be populated by JavaScript -->
-        </select>
-        <input type="text" id="reward" placeholder="Enter reward" style="display: none;">
-      </div>
-      <div class="button-container">
-        <button onclick="redeemReward()">Redeem Reward</button>
-      </div>
+    <div class="container">
+        <h1>Gym Punchcard</h1>
+        <div class="status">
+            <p id="currentPunches">Current Punches: 0</p>
+            <p id="unredeemedPunchcards">Unredeemed Punchcards: 0</p>
+            <p id="redeemedPunchcards">Redeemed Punchcards: 0</p>
+        </div>
+        <div id="activityButtons" class="activity-buttons"></div>
+        <div class="input-group">
+            <select id="activityDropdown" class="dropdown"></select>
+            <button onclick="addPunch()">Add Punch</button>
+        </div>
+        <div class="input-group">
+            <select id="rewardDropdown" class="dropdown"></select>
+            <button id="redeemButton" onclick="redeemReward()">Redeem Reward</button>
+        </div>
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab(event, 'historyTab')">History</button>
+            <button class="tab-button" onclick="openTab(event, 'analyticsTab')">Analytics</button>
+        </div>
+        <div id="historyTab" class="tab-content active">
+            <h2>History</h2>
+            <ul id="historyList" class="history-list"></ul>
+        </div>
+        <div id="analyticsTab" class="tab-content">
+            <h2>Activity Analytics</h2>
+            <canvas id="activityChart"></canvas>
+        </div>
     </div>
-
-    <div class="tab-container">
-      <button class="tab-button active" onclick="openTab(event, 'history')">History</button>
-      <button class="tab-button" onclick="openTab(event, 'analytics')">Analytics</button>
-    </div>
-
-    <div id="history" class="tab-content active">
-      <h2>History</h2>
-      <ul id="historyList"></ul>
-    </div>
-
-    <div id="analytics" class="tab-content">
-      <h2>Activity Analytics</h2>
-      <canvas id="activityChart"></canvas>
-    </div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="scripts.js"></script>
+    <script src="scripts.js"></script>
 </body>
 </html>
