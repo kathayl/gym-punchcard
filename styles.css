@@ -52,3 +52,17 @@ body {
     background-color: #004d40;
   }
   
+  #historyList {
+    list-style-type: none;
+    padding: 0;
+    text-align: left; /* Align text to the left */
+  }
+  
+  #historyList li {
+    margin: 5px 0;
+  }
+  
+  .reward {
+    color: green;
+  }
+  

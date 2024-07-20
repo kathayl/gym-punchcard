@@ -50,14 +50,17 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('https://my-gym-punchcard.kathyyliao.workers.dev/history')
       .then(response => response.json())
       .then(history => {
+        console.log('Fetched history:', history); // Debugging log
         const historyList = document.getElementById('historyList');
         historyList.innerHTML = '';
         history.forEach(entry => {
           const listItem = document.createElement('li');
+          const date = new Date(entry.date).toLocaleDateString();
           if (entry.type === 'punch') {
-            listItem.innerText = `Activity: ${entry.activity} - Date: ${new Date(entry.date).toLocaleString()}`;
+            listItem.innerText = `${date} - ${entry.activity}`;
           } else if (entry.type === 'reward') {
-            listItem.innerText = `Reward: ${entry.reward} - Date: ${new Date(entry.date).toLocaleString()}`;
+            listItem.innerText = `${date} - ${entry.reward}`;
+            listItem.classList.add('reward');
           }
           historyList.appendChild(listItem);
         });
