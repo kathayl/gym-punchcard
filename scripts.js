@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const icon = document.createElement('span');
           icon.className = 'icon';
           if (entry.type === 'punch') {
-            icon.textContent = '🏃‍♀️'; // Activity icon
+            icon.textContent = '👩‍🦲'; // Activity icon (Asian girl running)
             historyItem.classList.add('punch');
           } else {
             icon.textContent = '🎂'; // Reward icon
