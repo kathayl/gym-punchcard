@@ -169,6 +169,9 @@ const activityIcons = {
   
           historyList.appendChild(listItem);
         });
+  
+        // Update chart data
+        updateChart(history);
       })
       .catch(error => console.error('Error fetching history:', error));
   }
@@ -255,5 +258,39 @@ const activityIcons = {
     rewardDropdown.onchange = () => {
       document.getElementById('reward').style.display = rewardDropdown.value === 'other' ? 'block' : 'none';
     }
+  }
+  
+  function updateChart(history) {
+    const activityCounts = {};
+    history.forEach(entry => {
+      if (entry.type === 'punch') {
+        activityCounts[entry.activity] = (activityCounts[entry.activity] || 0) + 1;
+      }
+    });
+  
+    const labels = Object.keys(activityCounts);
+    const data = Object.values(activityCounts);
+  
+    const ctx = document.getElementById('activityChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Activity Count',
+          data: data,
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
   }
   
