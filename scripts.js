@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const historyItem = document.createElement('div');
           historyItem.className = 'history-item';
           historyItem.innerHTML = entry.type === 'punch' ? `${date} - ${entry.activity}` : `${date} - ${entry.reward}`;
-          listItem.classList.toggle('reward', entry.type === 'reward');
+          listItem.classList.add(entry.type === 'punch' ? 'punch' : 'reward');
   
           // Add edit link
           const editLink = document.createElement('span');

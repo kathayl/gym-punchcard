@@ -60,15 +60,20 @@ body {
   .input-container input {
     flex: 1;
     margin-right: 10px;
-    padding: 10px;
+    padding: 12px;
     font-size: 1em;
     border: 1px solid #ccc;
     border-radius: 4px;
+    box-sizing: border-box; /* Ensure padding is included in width calculation */
   }
   
   .input-container button {
-    flex: 0 0 auto;
+    flex: 1;
     margin-left: 10px;
+    padding: 12px;
+    font-size: 1em;
+    border-radius: 4px;
+    box-sizing: border-box; /* Ensure padding is included in width calculation */
   }
   
   #historyList {
@@ -99,6 +104,10 @@ body {
   
   .reward {
     color: green;
+  }
+  
+  .punch {
+    color: blue;
   }
   
   .edit-link {
