@@ -13,24 +13,29 @@
     <p>Unredeemed Punchcards: <span id="unredeemedPunchcards">0</span></p>
     <p>Redeemed Punchcards: <span id="redeemedPunchcards">0</span></p>
 
-    <button id="add-gym-btn" onclick="addGym()">🏋️‍♀️ Gym</button>
-    <button id="add-pickleball-btn" onclick="addPickleball()">🏓 Pickleball</button>
-    <button id="add-yoga-btn" onclick="addYoga()">🧘 Yoga</button>
+    <div class="button-row">
+      <button id="add-gym-btn" onclick="addGym()">🏋️‍♀️ Gym</button>
+      <button id="add-pickleball-btn" onclick="addPickleball()">🏓 Pickleball</button>
+      <button id="add-yoga-btn" onclick="addYoga()">🧘 Yoga</button>
+    </div>
 
-    <select id="activity-dropdown">
-      <option value="walk">🚶 Walk</option>
-      <option value="other">Other</option>
-    </select>
-    <input type="text" id="activity-input" style="display:none;" placeholder="Enter activity">
+    <div class="dropdown-row">
+      <select id="activity-dropdown">
+        <option value="walk">🚶 Walk</option>
+        <option value="other">Other</option>
+      </select>
+      <input type="text" id="activity-input" style="display:none;" placeholder="Enter activity">
+      <button id="add-punch-btn">Add Punch</button>
+    </div>
 
-    <select id="reward-dropdown">
-      <option value="pie">🥧 Pie</option>
-      <option value="other">Other</option>
-    </select>
-    <input type="text" id="reward-input" style="display:none;" placeholder="Enter reward">
-
-    <button id="add-punch-btn">Add Punch</button>
-    <button id="redeem-reward-btn">Redeem Reward</button>
+    <div class="dropdown-row">
+      <select id="reward-dropdown">
+        <option value="pie">🥧 Pie</option>
+        <option value="other">Other</option>
+      </select>
+      <input type="text" id="reward-input" style="display:none;" placeholder="Enter reward">
+      <button id="redeem-reward-btn">Redeem Reward</button>
+    </div>
 
     <div id="tabs">
       <button id="history-tab" class="active">History</button>
@@ -48,6 +53,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="scripts.js"></script>
 </body>
 </html>

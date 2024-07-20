@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
     document.getElementById('analytics-tab').addEventListener('click', () => {
       showTab('analytics');
+      renderActivityChart();  // Call the function to render the chart when the tab is clicked
     });
   });
   
@@ -91,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(history => {
         const historyList = document.getElementById('history-list');
         historyList.innerHTML = '';
-        history.forEach(entry => {
+        history.reverse().forEach(entry => {  // Reverse the order of the history entries
           const listItem = document.createElement('li');
           listItem.innerHTML = `
             ${entry.date} ${entry.type === 'punch' ? '🏋️' : '🥧'} ${entry.activity || entry.reward}
@@ -164,5 +165,48 @@ document.addEventListener('DOMContentLoaded', () => {
     .catch(error => {
       console.error('Error deleting log:', error);
     });
+  }
+  
+  function renderActivityChart() {
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/api/history')
+      .then(response => response.json())
+      .then(history => {
+        const activityCounts = history.reduce((counts, entry) => {
+          if (entry.type === 'punch') {
+            counts[entry.activity] = (counts[entry.activity] || 0) + 1;
+          }
+          return counts;
+        }, {});
+  
+        const sortedActivities = Object.entries(activityCounts).sort((a, b) => b[1] - a[1]);
+  
+        const labels = sortedActivities.map(item => item[0]);
+        const data = sortedActivities.map(item => item[1]);
+  
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Activity Count',
+              data: data,
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching history for analytics:', error);
+      });
   }
   
