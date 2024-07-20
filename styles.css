@@ -93,8 +93,13 @@ body {
   
   .history-item {
     display: flex;
-    justify-content: space-between;
-    width: 100%;
+    align-items: center;
+    gap: 10px; /* Space between items */
+  }
+  
+  .history-details {
+    display: flex;
+    align-items: center;
   }
   
   .history-buttons {

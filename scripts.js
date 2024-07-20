@@ -62,20 +62,24 @@ document.addEventListener('DOMContentLoaded', () => {
   
           const historyItem = document.createElement('div');
           historyItem.className = 'history-item';
-          
+  
+          const historyDetails = document.createElement('div');
+          historyDetails.className = 'history-details';
+  
           const icon = document.createElement('span');
           icon.className = 'icon';
           if (entry.type === 'punch') {
-            icon.textContent = '🏋️'; // Activity icon
+            icon.textContent = '🏃‍♀️'; // Activity icon
             historyItem.classList.add('punch');
           } else {
-            icon.textContent = '🎉'; // Reward icon
+            icon.textContent = '🎂'; // Reward icon
             historyItem.classList.add('reward');
           }
   
-          historyItem.appendChild(icon);
-          historyItem.innerHTML += entry.type === 'punch' ? `${date} - ${entry.activity}` : `${date} - ${entry.reward}`;
-  
+          historyDetails.appendChild(document.createTextNode(date));
+          historyDetails.appendChild(icon);
+          historyDetails.appendChild(document.createTextNode(entry.type === 'punch' ? ` ${entry.activity}` : ` ${entry.reward}`));
+          
           // Add edit link
           const editLink = document.createElement('span');
           editLink.innerHTML = 'Edit';
@@ -97,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
           historyButtons.appendChild(editLink);
           historyButtons.appendChild(deleteLink);
   
+          historyItem.appendChild(historyDetails);
           listItem.appendChild(historyItem);
           listItem.appendChild(historyButtons);
   
