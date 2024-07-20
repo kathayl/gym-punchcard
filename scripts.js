@@ -52,9 +52,21 @@ const activityIcons = {
         document.getElementById('currentPunches').innerText = `Current Punches: ${data.currentPunches}`;
         document.getElementById('unredeemedPunchcards').innerText = `Unredeemed Punchcards: ${data.unredeemedPunchcards}`;
         document.getElementById('redeemedPunchcards').innerText = `Redeemed Punchcards: ${data.redeemedPunchcards}`;
+  
+        const redeemRewardButton = document.querySelector('button[onclick="redeemReward()"]');
+        if (data.unredeemedPunchcards === 0) {
+          redeemRewardButton.disabled = true;
+          redeemRewardButton.style.backgroundColor = '#ccc';
+          redeemRewardButton.style.cursor = 'not-allowed';
+        } else {
+          redeemRewardButton.disabled = false;
+          redeemRewardButton.style.backgroundColor = '#00796b';
+          redeemRewardButton.style.cursor = 'pointer';
+        }
       })
       .catch(error => console.error('Error fetching status:', error));
   }
+  
   
   window.addPunch = function addPunch() {
     let activity = document.getElementById('activityDropdown').value;
@@ -268,8 +280,9 @@ const activityIcons = {
       }
     });
   
-    const labels = Object.keys(activityCounts);
-    const data = Object.values(activityCounts);
+    const sortedActivities = Object.keys(activityCounts).sort((a, b) => activityCounts[b] - activityCounts[a]);
+    const labels = sortedActivities.map(activity => `${activity} (${activityCounts[activity]})`);
+    const data = sortedActivities.map(activity => activityCounts[activity]);
   
     const ctx = document.getElementById('activityChart').getContext('2d');
     new Chart(ctx, {
@@ -287,7 +300,10 @@ const activityIcons = {
       options: {
         scales: {
           y: {
-            beginAtZero: true
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1 // Ensure only whole numbers are displayed
+            }
           }
         }
       }
