@@ -77,9 +77,20 @@ const activityIcons = {
       .catch(error => console.error('Error redeeming reward:', error));
   }
   
-  // Function to fill the activity input with the specified activity
+  // Function to log the activity directly
   window.fillActivity = function fillActivity(activity) {
-    document.getElementById('activity').value = activity;
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/punch', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ activity })
+    })
+      .then(() => {
+        updateStatus();
+        fetchHistory();
+      })
+      .catch(error => console.error('Error adding punch:', error));
   }
   
   function fetchHistory() {
