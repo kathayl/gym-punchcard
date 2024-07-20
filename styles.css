@@ -66,3 +66,9 @@ body {
     color: green;
   }
   
+  .delete-link {
+    color: red;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+  

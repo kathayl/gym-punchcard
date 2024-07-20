@@ -53,17 +53,19 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Fetched history:', history); // Debugging log
         const historyList = document.getElementById('historyList');
         historyList.innerHTML = '';
+        history.reverse(); // Reverse the history array to show newest first
         history.forEach(entry => {
           const listItem = document.createElement('li');
           const date = new Date(entry.date).toLocaleDateString();
           listItem.innerText = entry.type === 'punch' ? `${date} - ${entry.activity}` : `${date} - ${entry.reward}`;
           listItem.classList.toggle('reward', entry.type === 'reward');
   
-          // Add delete button
-          const deleteButton = document.createElement('button');
-          deleteButton.innerText = 'Delete';
-          deleteButton.onclick = () => deleteLog(entry.id);
-          listItem.appendChild(deleteButton);
+          // Add delete link
+          const deleteLink = document.createElement('span');
+          deleteLink.innerText = 'Delete';
+          deleteLink.classList.add('delete-link');
+          deleteLink.onclick = () => deleteLog(entry.id);
+          listItem.appendChild(deleteLink);
   
           historyList.appendChild(listItem);
         });
