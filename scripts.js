@@ -60,6 +60,12 @@ document.addEventListener('DOMContentLoaded', () => {
           listItem.innerHTML = entry.type === 'punch' ? `${date} - ${entry.activity}` : `${date} - ${entry.reward}`;
           listItem.classList.toggle('reward', entry.type === 'reward');
   
+          // Add edit link
+          const editLink = document.createElement('span');
+          editLink.innerHTML = 'Edit';
+          editLink.classList.add('edit-link');
+          editLink.onclick = () => editLog(entry.id, entry.activity);
+  
           // Add delete link
           const deleteLink = document.createElement('span');
           deleteLink.innerHTML = 'Delete';
@@ -69,12 +75,32 @@ document.addEventListener('DOMContentLoaded', () => {
               deleteLog(entry.id);
             }
           };
+  
+          listItem.appendChild(editLink);
           listItem.appendChild(deleteLink);
   
           historyList.appendChild(listItem);
         });
       })
       .catch(error => console.error('Error fetching history:', error));
+  }
+  
+  function editLog(logId, currentActivity) {
+    const newActivity = prompt('Enter new activity:', currentActivity);
+    if (newActivity && newActivity !== currentActivity) {
+      fetch('https://my-gym-punchcard.kathyyliao.workers.dev/edit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ logId, newActivity })
+      })
+        .then(() => {
+          updateStatus();
+          fetchHistory();
+        })
+        .catch(error => console.error('Error editing log:', error));
+    }
   }
   
   function deleteLog(logId) {
