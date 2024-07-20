@@ -59,11 +59,22 @@ document.addEventListener('DOMContentLoaded', () => {
         history.forEach(entry => {
           const listItem = document.createElement('li');
           const date = new Date(entry.date).toLocaleDateString();
-          
+  
           const historyItem = document.createElement('div');
           historyItem.className = 'history-item';
-          historyItem.innerHTML = entry.type === 'punch' ? `${date} - ${entry.activity}` : `${date} - ${entry.reward}`;
-          listItem.classList.add(entry.type === 'punch' ? 'punch' : 'reward');
+          
+          const icon = document.createElement('span');
+          icon.className = 'icon';
+          if (entry.type === 'punch') {
+            icon.textContent = '🏋️'; // Activity icon
+            historyItem.classList.add('punch');
+          } else {
+            icon.textContent = '🎉'; // Reward icon
+            historyItem.classList.add('reward');
+          }
+  
+          historyItem.appendChild(icon);
+          historyItem.innerHTML += entry.type === 'punch' ? `${date} - ${entry.activity}` : `${date} - ${entry.reward}`;
   
           // Add edit link
           const editLink = document.createElement('span');
