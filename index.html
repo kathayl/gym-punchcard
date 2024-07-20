@@ -1,9 +1,20 @@
-<div class="buttons-container">
-    <input type="text" id="activity" placeholder="Enter activity">
-    <button class="full-width" onclick="addPunch()">Add Punch</button>
-  </div>
-  <div class="buttons-container">
-    <input type="text" id="reward" placeholder="Enter reward">
-    <button class="full-width" onclick="redeemReward()">Redeem Reward</button>
+<div class="punchcard">
+    <h1>Gym Punchcard</h1>
+    <p id="currentPunches">Current Punches: 0</p>
+    <p id="unredeemedPunchcards">Unredeemed Punchcards: 0</p>
+    <p id="redeemedPunchcards">Redeemed Punchcards: 0</p>
+  
+    <div class="input-container">
+      <input type="text" id="activity" placeholder="Enter activity">
+      <button onclick="addPunch()">Add Punch</button>
+    </div>
+  
+    <div class="input-container">
+      <input type="text" id="reward" placeholder="Enter reward">
+      <button onclick="redeemReward()">Redeem Reward</button>
+    </div>
+  
+    <h2 class="history-header">History</h2>
+    <ul id="historyList"></ul>
   </div>
   
