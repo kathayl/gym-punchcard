@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchHistory();
     populateActivityButtons();
     populateDropdowns();
-    openTab(null, 'analytics'); // Show the Analytics tab by default
+    openTab(null, 'history'); // Show the History tab by default
   });
   
   function openTab(evt, tabName) {
@@ -246,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('reward').style.display = rewardDropdown.value === 'other' ? 'block' : 'none';
     }
   }
+  
   function updateChart(history) {
     const activityCounts = {};
     history.forEach(entry => {
@@ -312,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const popularActivities = ['gym', 'pickleball', 'yoga'];
   
   // All activities and rewards
-  const allActivities = ['gym', 'pickleball', 'yoga', 'walk', 'run', 'hike', 'other'];
+  const allActivities = ['gym', 'pickleball', 'yoga', 'walk', 'run', 'hike', 'dance', 'snowboarding', 'stairs', 'other'];
   const allRewards = ['pie', 'cake', 'cookies', 'boba', 'candy', 'smoothies', 'brownies', 'other'];
   
   document.addEventListener('DOMContentLoaded', () => {
@@ -320,6 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchHistory();
     populateActivityButtons();
     populateDropdowns();
-    openTab(null, 'analytics'); // Show the Analytics tab by default
+    openTab(null, 'history'); // Show the History tab by default
   });
   
