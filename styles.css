@@ -51,10 +51,30 @@ body {
     background-color: #004d40;
   }
   
+  .input-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+  }
+  
+  .input-container input {
+    flex: 1;
+    margin-right: 10px;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .input-container button {
+    flex: 0 0 auto;
+    margin-left: 10px;
+  }
+  
   #historyList {
     list-style-type: none;
     padding: 0;
-    text-align: left; /* Align text to the left */
+    text-align: left;
   }
   
   #historyList li {
@@ -62,8 +82,8 @@ body {
     justify-content: space-between;
     align-items: center;
     margin: 5px 0;
-    font-size: 1em; /* Ensure consistent font size */
-    color: #000; /* Ensure consistent color */
+    font-size: 1em;
+    color: #000;
   }
   
   .history-item {
@@ -82,31 +102,20 @@ body {
   }
   
   .edit-link {
-    color: blue; /* Change the color to blue */
+    color: blue;
     cursor: pointer;
-    margin-left: 10px; /* Add padding around the links */
+    margin-left: 10px;
   }
   
   .delete-link {
     color: red;
     cursor: pointer;
-    margin-left: 10px; /* Add padding around the links */
-  }
-  
-  .input-container {
-    display: flex;
-    margin-bottom: 15px;
-    align-items: center;
-  }
-  
-  .input-container input {
-    flex: 1;
-    margin-right: 10px;
+    margin-left: 10px;
   }
   
   .history-header {
     font-size: 1.5em;
     margin-top: 20px;
-    text-align: center; /* Center align the history header */
+    text-align: center;
   }
   
