@@ -57,7 +57,7 @@ body {
     margin-bottom: 15px;
   }
   
-  .input-container input {
+  .input-container input, .input-container select {
     flex: 1;
     margin-right: 10px;
     padding: 12px;

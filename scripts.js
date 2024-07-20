@@ -243,12 +243,12 @@ const activityIcons = {
     otherRewardOption.text = 'Other';
     rewardDropdown.appendChild(otherRewardOption);
   
-// Show or hide the input fields based on the selected option
-activityDropdown.onchange = () => {
-    document.getElementById('activity').style.display = activityDropdown.value === 'other' ? 'block' : 'none';
-  }
+    // Show or hide the input fields based on the selected option
+    activityDropdown.onchange = () => {
+      document.getElementById('activity').style.display = activityDropdown.value === 'other' ? 'block' : 'none';
+    }
   
-  rewardDropdown.onchange = () => {
-    document.getElementById('reward').style.display = rewardDropdown.value === 'other' ? 'block' : 'none';
-  }
-  }
+    rewardDropdown.onchange = () => {
+        document.getElementById('reward').style.display = rewardDropdown.value === 'other' ? 'block' : 'none';
+      }
+    }
