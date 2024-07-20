@@ -57,14 +57,18 @@ document.addEventListener('DOMContentLoaded', () => {
         history.forEach(entry => {
           const listItem = document.createElement('li');
           const date = new Date(entry.date).toLocaleDateString();
-          listItem.innerText = entry.type === 'punch' ? `${date} - ${entry.activity}` : `${date} - ${entry.reward}`;
+          listItem.innerHTML = entry.type === 'punch' ? `${date} - ${entry.activity}` : `${date} - ${entry.reward}`;
           listItem.classList.toggle('reward', entry.type === 'reward');
   
           // Add delete link
           const deleteLink = document.createElement('span');
-          deleteLink.innerText = 'Delete';
+          deleteLink.innerHTML = 'Delete';
           deleteLink.classList.add('delete-link');
-          deleteLink.onclick = () => deleteLog(entry.id);
+          deleteLink.onclick = () => {
+            if (confirm('Are you sure you want to delete this log?')) {
+              deleteLog(entry.id);
+            }
+          };
           listItem.appendChild(deleteLink);
   
           historyList.appendChild(listItem);
