@@ -1,5 +1,35 @@
 // scripts.js
 
+// Define icon mappings for activities and rewards
+const activityIcons = {
+    "walk": "🚶‍♀️",
+    "run": "🏃‍♀️",
+    "gym": "🏋️‍♀️",
+    "hike": "🥾",
+    "pickleball": "🏓",
+    "yoga": "🧘‍♀️",
+    "pilates": "🤸‍♀️",
+    "dance": "💃",
+    "snowboarding": "🏂",
+    "stairs": "🪜",
+    // Add more activities as needed
+    "default": "🏃‍♂️" // Default icon for activities not explicitly listed
+  };
+  
+  const rewardIcons = {
+    "pie": "🥧",
+    "cake": "🎂",
+    "ice cream": "🍦",
+    "brownies": "🍫",
+    "cookies": "🍪",
+    "boba": "🧋",
+    "candy": "🍬",
+    "smoothies": "🥤",
+    // Add more rewards as needed
+    "default": "🎉" // Default icon for rewards not explicitly listed
+  };
+  
+  
 document.addEventListener('DOMContentLoaded', () => {
     updateStatus();
     fetchHistory();
@@ -69,10 +99,10 @@ document.addEventListener('DOMContentLoaded', () => {
           const icon = document.createElement('span');
           icon.className = 'icon';
           if (entry.type === 'punch') {
-            icon.textContent = '👩‍🦲'; // Activity icon (Asian girl running)
+            icon.textContent = activityIcons[entry.activity] || activityIcons["default"];
             historyItem.classList.add('punch');
           } else {
-            icon.textContent = '🎂'; // Reward icon
+            icon.textContent = rewardIcons[entry.reward] || rewardIcons["default"];
             historyItem.classList.add('reward');
           }
   
