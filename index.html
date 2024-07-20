@@ -13,27 +13,31 @@
     <div id="unredeemedPunchcards">Unredeemed Punchcards: 0</div>
     <div id="redeemedPunchcards">Redeemed Punchcards: 0</div>
 
-    <div id="activityButtons" class="activity-buttons"></div>
+    <div class="activity-reward-section">
+      <div id="activityButtons" class="activity-buttons"></div>
 
-    <select id="activityDropdown" class="dropdown">
-      <!-- Options will be populated by JavaScript -->
-    </select>
-    <input type="text" id="activity" placeholder="Enter activity" style="display: none;">
+      <select id="activityDropdown" class="dropdown">
+        <!-- Options will be populated by JavaScript -->
+      </select>
+      <input type="text" id="activity" placeholder="Enter activity" style="display: none;">
 
-    <select id="rewardDropdown" class="dropdown">
-      <!-- Options will be populated by JavaScript -->
-    </select>
-    <input type="text" id="reward" placeholder="Enter reward" style="display: none;">
+      <select id="rewardDropdown" class="dropdown">
+        <!-- Options will be populated by JavaScript -->
+      </select>
+      <input type="text" id="reward" placeholder="Enter reward" style="display: none;">
 
-    <button onclick="addPunch()">Add Punch</button>
-    <button onclick="redeemReward()">Redeem Reward</button>
+      <div class="button-container">
+        <button onclick="addPunch()">Add Punch</button>
+        <button onclick="redeemReward()">Redeem Reward</button>
+      </div>
+    </div>
 
     <div class="tab-container">
-      <button class="tab-button" onclick="openTab(event, 'history')">History</button>
+      <button class="tab-button active" onclick="openTab(event, 'history')">History</button>
       <button class="tab-button" onclick="openTab(event, 'analytics')">Analytics</button>
     </div>
 
-    <div id="history" class="tab-content">
+    <div id="history" class="tab-content active">
       <h2>History</h2>
       <ul id="historyList"></ul>
     </div>
