@@ -34,7 +34,7 @@ addEventListener('fetch', event => {
 	}
   
 	response = new Response(response.body, response); // Clone the response to add headers
-	response.headers.set('Access-Control-Allow-Origin', 'https://gym-punchcard.pages.dev');
+	response.headers.set('Access-Control-Allow-Origin', '*');
 	response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 	response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
   
@@ -43,7 +43,7 @@ addEventListener('fetch', event => {
   
   function handleOptions(request) {
 	const headers = {
-	  'Access-Control-Allow-Origin': 'https://gym-punchcard.pages.dev',
+	  'Access-Control-Allow-Origin': '*',
 	  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 	  'Access-Control-Allow-Headers': 'Content-Type',
 	};

@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   
   function addPunch(activity) {
-    fetch('/api/punch', {
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/api/punch', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function redeemReward(reward) {
-    fetch('/api/reward', {
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/api/reward', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function updateStatus() {
-    fetch('/api/status')
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/api/status')
       .then(response => response.json())
       .then(data => {
         document.getElementById('currentPunches').textContent = data.currentPunches;
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function updateHistory() {
-    fetch('/api/history')
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/api/history')
       .then(response => response.json())
       .then(history => {
         const historyList = document.getElementById('history-list');
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   function editLog(logId) {
     const newActivity = prompt('Enter the new activity:');
-    fetch('/api/edit', {
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/api/edit', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function deleteLog(logId) {
-    fetch('/api/delete', {
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/api/delete', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
