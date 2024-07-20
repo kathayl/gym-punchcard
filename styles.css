@@ -61,19 +61,32 @@ body {
   #historyList li {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin: 5px 0;
     font-size: 1em; /* Ensure consistent font size */
     color: #000; /* Ensure consistent color */
+  }
+  
+  .history-item {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .history-buttons {
+    display: flex;
+    gap: 10px;
   }
   
   .reward {
     color: green;
   }
   
+  .edit-link,
   .delete-link {
     color: red;
     cursor: pointer;
-    padding-left: 10px; /* Add padding around the delete link */
+    margin-left: 10px; /* Add padding around the links */
   }
   
   .input-container {

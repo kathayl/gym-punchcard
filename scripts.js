@@ -57,27 +57,35 @@ document.addEventListener('DOMContentLoaded', () => {
         history.forEach(entry => {
           const listItem = document.createElement('li');
           const date = new Date(entry.date).toLocaleDateString();
-          listItem.innerHTML = entry.type === 'punch' ? `${date} - ${entry.activity}` : `${date} - ${entry.reward}`;
+          
+          const historyItem = document.createElement('div');
+          historyItem.className = 'history-item';
+          historyItem.innerHTML = entry.type === 'punch' ? `${date} - ${entry.activity}` : `${date} - ${entry.reward}`;
           listItem.classList.toggle('reward', entry.type === 'reward');
   
           // Add edit link
           const editLink = document.createElement('span');
           editLink.innerHTML = 'Edit';
-          editLink.classList.add('edit-link');
+          editLink.className = 'edit-link';
           editLink.onclick = () => editLog(entry.id, entry.activity);
   
           // Add delete link
           const deleteLink = document.createElement('span');
           deleteLink.innerHTML = 'Delete';
-          deleteLink.classList.add('delete-link');
+          deleteLink.className = 'delete-link';
           deleteLink.onclick = () => {
             if (confirm('Are you sure you want to delete this log?')) {
               deleteLog(entry.id);
             }
           };
   
-          listItem.appendChild(editLink);
-          listItem.appendChild(deleteLink);
+          const historyButtons = document.createElement('div');
+          historyButtons.className = 'history-buttons';
+          historyButtons.appendChild(editLink);
+          historyButtons.appendChild(deleteLink);
+  
+          listItem.appendChild(historyItem);
+          listItem.appendChild(historyButtons);
   
           historyList.appendChild(listItem);
         });
