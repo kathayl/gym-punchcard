@@ -12,6 +12,7 @@ const activityIcons = {
     "dance": "💃",
     "snowboarding": "🏂",
     "stairs": "🪜",
+    "other": "❓",
     // Add more activities as needed
     "default": "🏃‍♂️" // Default icon for activities not explicitly listed
   };
@@ -25,12 +26,13 @@ const activityIcons = {
     "boba": "🧋",
     "candy": "🍬",
     "smoothies": "🥤",
+    "other": "❓",
     // Add more rewards as needed
     "default": "🎉" // Default icon for rewards not explicitly listed
   };
   
   // Most popular activities
-  const popularActivities = ["gym", "pickleball", "walk", "run"];
+  const popularActivities = ["gym", "pickleball", "yoga"];
   // All activities including the popular ones
   const allActivities = ["walk", "run", "gym", "hike", "pickleball", "yoga", "pilates", "dance", "snowboarding", "stairs"];
   
@@ -209,7 +211,7 @@ const activityIcons = {
     activityButtonsContainer.innerHTML = '';
     popularActivities.forEach(activity => {
       const button = document.createElement('button');
-      button.innerHTML = `${activityIcons[activity]} ${activity.charAt(0).toUpperCase() + activity.slice(1)}`;
+      button.innerHTML = `<span>${activityIcons[activity]}</span> ${activity.charAt(0).toUpperCase() + activity.slice(1)}`;
       button.onclick = () => fillActivity(activity);
       activityButtonsContainer.appendChild(button);
     });
@@ -221,14 +223,16 @@ const activityIcons = {
   
     // Populate activity dropdown
     allActivities.forEach(activity => {
-      const option = document.createElement('option');
-      option.value = activity;
-      option.text = `${activityIcons[activity]} ${activity.charAt(0).toUpperCase() + activity.slice(1)}`;
-      activityDropdown.appendChild(option);
+      if (!popularActivities.includes(activity)) { // Exclude popular activities already having buttons
+        const option = document.createElement('option');
+        option.value = activity;
+        option.text = `${activityIcons[activity]} ${activity.charAt(0).toUpperCase() + activity.slice(1)}`;
+        activityDropdown.appendChild(option);
+      }
     });
     const otherActivityOption = document.createElement('option');
     otherActivityOption.value = 'other';
-    otherActivityOption.text = 'Other';
+    otherActivityOption.text = `${activityIcons["other"]} Other`;
     activityDropdown.appendChild(otherActivityOption);
   
     // Populate reward dropdown
@@ -240,7 +244,7 @@ const activityIcons = {
     });
     const otherRewardOption = document.createElement('option');
     otherRewardOption.value = 'other';
-    otherRewardOption.text = 'Other';
+    otherRewardOption.text = `${rewardIcons["other"]} Other`;
     rewardDropdown.appendChild(otherRewardOption);
   
     // Show or hide the input fields based on the selected option
@@ -249,6 +253,7 @@ const activityIcons = {
     }
   
     rewardDropdown.onchange = () => {
-        document.getElementById('reward').style.display = rewardDropdown.value === 'other' ? 'block' : 'none';
-      }
+      document.getElementById('reward').style.display = rewardDropdown.value === 'other' ? 'block' : 'none';
     }
+  }
+  
