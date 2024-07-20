@@ -78,8 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
   
           historyDetails.appendChild(document.createTextNode(date));
           historyDetails.appendChild(icon);
-          historyDetails.appendChild(document.createTextNode(entry.type === 'punch' ? ` ${entry.activity}` : ` ${entry.reward}`));
-          
+          historyDetails.appendChild(document.createTextNode(entry.type === 'punch' ? `${entry.activity}` : `${entry.reward}`));
+  
           // Add edit link
           const editLink = document.createElement('span');
           editLink.innerHTML = 'Edit';
