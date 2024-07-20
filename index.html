@@ -13,21 +13,25 @@
     <div id="unredeemedPunchcards">Unredeemed Punchcards: 0</div>
     <div id="redeemedPunchcards">Redeemed Punchcards: 0</div>
 
+    <div id="activityButtons" class="activity-buttons"></div>
+
     <div class="activity-reward-section">
-      <div id="activityButtons" class="activity-buttons"></div>
-
-      <select id="activityDropdown" class="dropdown">
-        <!-- Options will be populated by JavaScript -->
-      </select>
-      <input type="text" id="activity" placeholder="Enter activity" style="display: none;">
-
-      <select id="rewardDropdown" class="dropdown">
-        <!-- Options will be populated by JavaScript -->
-      </select>
-      <input type="text" id="reward" placeholder="Enter reward" style="display: none;">
-
+      <div class="dropdown-container">
+        <select id="activityDropdown" class="dropdown">
+          <!-- Options will be populated by JavaScript -->
+        </select>
+        <input type="text" id="activity" placeholder="Enter activity" style="display: none;">
+      </div>
       <div class="button-container">
         <button onclick="addPunch()">Add Punch</button>
+      </div>
+      <div class="dropdown-container">
+        <select id="rewardDropdown" class="dropdown">
+          <!-- Options will be populated by JavaScript -->
+        </select>
+        <input type="text" id="reward" placeholder="Enter reward" style="display: none;">
+      </div>
+      <div class="button-container">
         <button onclick="redeemReward()">Redeem Reward</button>
       </div>
     </div>
