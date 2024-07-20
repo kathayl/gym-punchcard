@@ -20,14 +20,16 @@ addEventListener('fetch', event => {
 	let response;
 	
 	if (path[0] === 'punch') {
-	  response = await handlePunch(request);
-	} else if (path[0] === 'status') {
-	  response = await handleStatus(request);
-	} else if (path[0] === 'reward') {
-	  response = await handleReward(request);
-	} else {
-	  response = new Response('Not found', { status: 404 });
-	}
+		response = await handlePunch(request);
+	  } else if (path[0] === 'status') {
+		response = await handleStatus(request);
+	  } else if (path[0] === 'reward') {
+		response = await handleReward(request);
+	  } else if (path[0] === 'history') {
+		response = await handleHistory(request);
+	  } else {
+		response = new Response('Not found', { status: 404 });
+	  }
   
 	response = new Response(response.body, response); // Clone the response to add headers
 	response.headers.set('Access-Control-Allow-Origin', '*');
@@ -38,6 +40,7 @@ addEventListener('fetch', event => {
   }
   //function for adding punches and checking if card is full
   async function handlePunch(request) {
+	const { activity } = await request.json();
 	const id = await getUserId(request);
 	const userData = await getUserData(id);
   
@@ -54,10 +57,45 @@ addEventListener('fetch', event => {
     userData.currentPunches = 0;
   }
 
+  // Log activity in history
+  userData.history.push({ type: 'punch', activity, date: new Date().toISOString() });
+
 	await PUNCHCARDS.put(id, JSON.stringify(userData));
   
 	return new Response(`Punch added! Current punches: ${userData.currentPunches}`);
   }
+
+  //function for reward
+async function handleReward(request) {
+  const { reward } = await request.json();
+  const id = await getUserId(request);
+  const userData = await getUserData(id);
+
+  if (userData.unredeemedPunchcards < 1) {
+    return new Response('No unredeemed punchcards available.', { status: 400 });
+  }
+
+  userData.unredeemedPunchcards -= 1;
+  userData.redeemedPunchcards += 1;
+  
+  // Log reward in history
+  userData.history.push({ type: 'reward', reward, date: new Date().toISOString() });
+
+	await PUNCHCARDS.put(id, JSON.stringify(userData));
+  
+	return new Response('Reward claimed! Punchcard reset.');
+  }
+  
+  // History
+  async function handleHistory(request) {
+	const id = await getUserId(request);
+	const userData = await getUserData(id);
+  
+	return new Response(JSON.stringify(userData.history), {
+	  headers: { 'Content-Type': 'application/json' }
+	});
+  }
+
   //function for checking status aka how many punches
   async function handleStatus(request) {
 	const id = await getUserId(request);
@@ -67,23 +105,7 @@ addEventListener('fetch', event => {
 	  headers: { 'Content-Type': 'application/json' }
 	});
   }
-  //function for reward
-  async function handleReward(request) {
-	const id = await getUserId(request);
-	const userData = await getUserData(id);
-  
-	if (userData.unredeemedPunchcards < 1) {
-	  return new Response('No unredeemed punchcards available.', { status: 400 });
-	}
-  
-	userData.unredeemedPunchcards -= 1;
-	userData.redeemedPunchcards += 1;
-  
-	await PUNCHCARDS.put(id, JSON.stringify(userData));
-  
-	return new Response('Reward claimed! Punchcard reset.');
-  }
-  
+
   async function getUserId(request) {
 	// Implement a way to identify users, e.g., via cookies, headers, etc.
 	// For simplicity, let's use a fixed user ID.
@@ -92,5 +114,5 @@ addEventListener('fetch', event => {
   //userData keeps track of current punches, redeemed and unredeemed punchcards
   async function getUserData(id) {
 	const userData = await PUNCHCARDS.get(id);
-	return userData ? JSON.parse(userData) : { currentPunches: 0, unredeemedPunchcards: 0, redeemedPunchcards: 0 };
+	return userData ? JSON.parse(userData) : { currentPunches: 0, unredeemedPunchcards: 0, redeemedPunchcards: 0, history: [] };
   }
