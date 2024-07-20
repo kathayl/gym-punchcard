@@ -1,3 +1,5 @@
+// scripts.js
+
 document.addEventListener('DOMContentLoaded', () => {
     updateStatus();
     fetchHistory();
@@ -14,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .catch(error => console.error('Error fetching status:', error));
   }
   
-  function addPunch() {
+  window.addPunch = function addPunch() {
     const activity = document.getElementById('activity').value;
     fetch('https://my-gym-punchcard.kathyyliao.workers.dev/punch', {
       method: 'POST',
@@ -30,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .catch(error => console.error('Error adding punch:', error));
   }
   
-  function redeemReward() {
+  window.redeemReward = function redeemReward() {
     const reward = document.getElementById('reward').value;
     fetch('https://my-gym-punchcard.kathyyliao.workers.dev/reward', {
       method: 'POST',
