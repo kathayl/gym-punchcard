@@ -29,9 +29,18 @@ const activityIcons = {
     "default": "🎉" // Default icon for rewards not explicitly listed
   };
   
+  // Most popular activities
+  const popularActivities = ["gym", "pickleball", "walk", "run"];
+  // All activities including the popular ones
+  const allActivities = ["walk", "run", "gym", "hike", "pickleball", "yoga", "pilates", "dance", "snowboarding", "stairs"];
+  
+  const allRewards = ["pie", "cake", "ice cream", "brownies", "cookies", "boba", "candy", "smoothies"];
+  
   document.addEventListener('DOMContentLoaded', () => {
     updateStatus();
     fetchHistory();
+    populateActivityButtons();
+    populateDropdowns();
   });
   
   function updateStatus() {
@@ -46,7 +55,10 @@ const activityIcons = {
   }
   
   window.addPunch = function addPunch() {
-    const activity = document.getElementById('activity').value;
+    let activity = document.getElementById('activityDropdown').value;
+    if (activity === 'other') {
+      activity = document.getElementById('activity').value;
+    }
     fetch('https://my-gym-punchcard.kathyyliao.workers.dev/punch', {
       method: 'POST',
       headers: {
@@ -62,7 +74,10 @@ const activityIcons = {
   }
   
   window.redeemReward = function redeemReward() {
-    const reward = document.getElementById('reward').value;
+    let reward = document.getElementById('rewardDropdown').value;
+    if (reward === 'other') {
+      reward = document.getElementById('reward').value;
+    }
     fetch('https://my-gym-punchcard.kathyyliao.workers.dev/reward', {
       method: 'POST',
       headers: {
@@ -189,3 +204,51 @@ const activityIcons = {
       .catch(error => console.error('Error deleting log:', error));
   }
   
+  function populateActivityButtons() {
+    const activityButtonsContainer = document.getElementById('activityButtons');
+    activityButtonsContainer.innerHTML = '';
+    popularActivities.forEach(activity => {
+      const button = document.createElement('button');
+      button.innerHTML = `${activityIcons[activity]} ${activity.charAt(0).toUpperCase() + activity.slice(1)}`;
+      button.onclick = () => fillActivity(activity);
+      activityButtonsContainer.appendChild(button);
+    });
+  }
+  
+  function populateDropdowns() {
+    const activityDropdown = document.getElementById('activityDropdown');
+    const rewardDropdown = document.getElementById('rewardDropdown');
+  
+    // Populate activity dropdown
+    allActivities.forEach(activity => {
+      const option = document.createElement('option');
+      option.value = activity;
+      option.text = `${activityIcons[activity]} ${activity.charAt(0).toUpperCase() + activity.slice(1)}`;
+      activityDropdown.appendChild(option);
+    });
+    const otherActivityOption = document.createElement('option');
+    otherActivityOption.value = 'other';
+    otherActivityOption.text = 'Other';
+    activityDropdown.appendChild(otherActivityOption);
+  
+    // Populate reward dropdown
+    allRewards.forEach(reward => {
+      const option = document.createElement('option');
+      option.value = reward;
+      option.text = `${rewardIcons[reward]} ${reward.charAt(0).toUpperCase() + reward.slice(1)}`;
+      rewardDropdown.appendChild(option);
+    });
+    const otherRewardOption = document.createElement('option');
+    otherRewardOption.value = 'other';
+    otherRewardOption.text = 'Other';
+    rewardDropdown.appendChild(otherRewardOption);
+  
+// Show or hide the input fields based on the selected option
+activityDropdown.onchange = () => {
+    document.getElementById('activity').style.display = activityDropdown.value === 'other' ? 'block' : 'none';
+  }
+  
+  rewardDropdown.onchange = () => {
+    document.getElementById('reward').style.display = rewardDropdown.value === 'other' ? 'block' : 'none';
+  }
+  }
