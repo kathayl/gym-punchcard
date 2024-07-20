@@ -62,6 +62,8 @@ body {
     display: flex;
     justify-content: space-between;
     margin: 5px 0;
+    font-size: 1em; /* Ensure consistent font size */
+    color: #000; /* Ensure consistent color */
   }
   
   .reward {
@@ -71,7 +73,7 @@ body {
   .delete-link {
     color: red;
     cursor: pointer;
-    margin-left: 10px;
+    padding-left: 10px; /* Add padding around the delete link */
   }
   
   .input-container {
@@ -81,5 +83,6 @@ body {
   .history-header {
     font-size: 1.5em;
     margin-top: 20px;
+    text-align: center; /* Center align the history header */
   }
   
