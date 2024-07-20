@@ -29,8 +29,7 @@ const activityIcons = {
     "default": "🎉" // Default icon for rewards not explicitly listed
   };
   
-  
-document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
     updateStatus();
     fetchHistory();
   });
@@ -78,6 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
       .catch(error => console.error('Error redeeming reward:', error));
   }
   
+  // Function to fill the activity input with the specified activity
+  window.fillActivity = function fillActivity(activity) {
+    document.getElementById('activity').value = activity;
+  }
+  
   function fetchHistory() {
     fetch('https://my-gym-punchcard.kathyyliao.workers.dev/history')
       .then(response => response.json())
@@ -108,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
           historyDetails.appendChild(document.createTextNode(date));
           historyDetails.appendChild(icon);
-          historyDetails.appendChild(document.createTextNode(entry.type === 'punch' ? `${entry.activity}` : `${entry.reward}`));
+          historyDetails.appendChild(document.createTextNode(entry.type === 'punch' ? ` ${entry.activity}` : ` ${entry.reward}`));
   
           // Add edit link
           const editLink = document.createElement('span');
