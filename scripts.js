@@ -56,15 +56,33 @@ document.addEventListener('DOMContentLoaded', () => {
         history.forEach(entry => {
           const listItem = document.createElement('li');
           const date = new Date(entry.date).toLocaleDateString();
-          if (entry.type === 'punch') {
-            listItem.innerText = `${date} - ${entry.activity}`;
-          } else if (entry.type === 'reward') {
-            listItem.innerText = `${date} - ${entry.reward}`;
-            listItem.classList.add('reward');
-          }
+          listItem.innerText = entry.type === 'punch' ? `${date} - ${entry.activity}` : `${date} - ${entry.reward}`;
+          listItem.classList.toggle('reward', entry.type === 'reward');
+  
+          // Add delete button
+          const deleteButton = document.createElement('button');
+          deleteButton.innerText = 'Delete';
+          deleteButton.onclick = () => deleteLog(entry.id);
+          listItem.appendChild(deleteButton);
+  
           historyList.appendChild(listItem);
         });
       })
       .catch(error => console.error('Error fetching history:', error));
+  }
+  
+  function deleteLog(logId) {
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/delete', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ logId })
+    })
+      .then(() => {
+        updateStatus();
+        fetchHistory();
+      })
+      .catch(error => console.error('Error deleting log:', error));
   }
   
