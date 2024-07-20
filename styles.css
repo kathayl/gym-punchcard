@@ -37,7 +37,6 @@ body {
   }
   
   .punchcard button {
-    margin: 10px;
     padding: 12px 24px;
     font-size: 1em;
     color: #fff;
@@ -82,7 +81,12 @@ body {
     color: green;
   }
   
-  .edit-link,
+  .edit-link {
+    color: blue; /* Change the color to blue */
+    cursor: pointer;
+    margin-left: 10px; /* Add padding around the links */
+  }
+  
   .delete-link {
     color: red;
     cursor: pointer;
@@ -97,5 +101,15 @@ body {
     font-size: 1.5em;
     margin-top: 20px;
     text-align: center; /* Center align the history header */
+  }
+  
+  .buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Add some space between the buttons */
+  }
+  
+  button.full-width {
+    width: 100%; /* Make both buttons full width to align them */
   }
   

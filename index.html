@@ -1,27 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gym Punchcard</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-</head>
-<body>
-  <div class="punchcard">
-    <h1>Gym Punchcard</h1>
-    <p id="currentPunches">Current Punches: 0</p>
-    <p id="unredeemedPunchcards">Unredeemed Punchcards: 0</p>
-    <p id="redeemedPunchcards">Redeemed Punchcards: 0</p>
+<div class="buttons-container">
     <input type="text" id="activity" placeholder="Enter activity">
-    <button onclick="addPunch()"><i class="fas fa-plus-circle"></i> Add Punch</button>
-    <input type="text" id="reward" placeholder="Enter reward">
-    <button onclick="redeemReward()"><i class="fas fa-gift"></i> Redeem Reward</button>
-    <div id="history">
-      <h2>History</h2>
-      <ul id="historyList"></ul>
-    </div>
+    <button class="full-width" onclick="addPunch()">Add Punch</button>
   </div>
-  <script src="scripts.js"></script>
-</body>
-</html>
+  <div class="buttons-container">
+    <input type="text" id="reward" placeholder="Enter reward">
+    <button class="full-width" onclick="redeemReward()">Redeem Reward</button>
+  </div>
+  
