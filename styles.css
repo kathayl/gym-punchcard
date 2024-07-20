@@ -5,79 +5,67 @@ body {
   .container {
     max-width: 600px;
     margin: 0 auto;
-    padding: 20px;
     text-align: center;
   }
   
-  .status, .buttons, .inputs, .tabs, .content {
-    margin-bottom: 20px;
-  }
-  
-  .activity-button {
+  button {
+    padding: 10px 20px;
     margin: 5px;
-    padding: 10px;
-    font-size: 16px;
-  }
-  
-  .inputs select, .inputs button {
-    margin: 5px;
-    padding: 10px;
-    font-size: 16px;
-  }
-  
-  .tabs {
-    display: flex;
-    justify-content: center;
-  }
-  
-  .tab {
-    margin: 5px;
-    padding: 10px;
     cursor: pointer;
   }
   
-  .tab.active {
-    border-bottom: 2px solid #333;
+  button.active {
+    background-color: #4CAF50;
+    color: white;
   }
   
-  .content {
+  #tabs {
+    margin-top: 20px;
+  }
+  
+  .tab-content {
     display: none;
   }
   
-  .content.active {
+  #history, #analytics {
     display: block;
   }
   
-  #historyList {
+  #activity-input, #reward-input {
+    display: none;
+  }
+  
+  #history-list {
     list-style-type: none;
     padding: 0;
   }
   
-  #historyList li {
-    margin: 10px 0;
+  #history-list li {
+    margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
   }
   
-  #historyList li span {
-    flex: 1;
+  #activity-dropdown, #reward-dropdown {
+    padding: 10px;
+    margin: 5px;
   }
   
-  button.edit, button.delete {
-    margin-left: 10px;
+  #activity-dropdown::after, #reward-dropdown::after {
+    content: '▾';
+    margin-left: 5px;
   }
   
-  button.delete {
-    color: red;
+  .tab-content {
+    display: none;
   }
   
-  button.edit {
-    color: blue;
+  #history {
+    display: block;
   }
   
-  #activityChart {
-    width: 100%;
-    height: 400px;
+  #history-tab.active, #analytics-tab.active {
+    font-weight: bold;
+    border-bottom: 2px solid #4CAF50;
   }
   
