@@ -1,13 +1,3 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npx wrangler dev src/index.js` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npx wrangler publish src/index.js --name my-worker` to publish your worker
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
-
 addEventListener('fetch', event => {
 	event.respondWith(handleRequest(event.request));
   });
@@ -56,6 +46,9 @@ addEventListener('fetch', event => {
 	}
   
 	// Log activity in history
+	if (!userData.history) {
+	  userData.history = [];
+	}
 	userData.history.push({ type: 'punch', activity, date: new Date().toISOString() });
   
 	await PUNCHCARDS.put(id, JSON.stringify(userData));
@@ -76,6 +69,9 @@ addEventListener('fetch', event => {
 	userData.redeemedPunchcards += 1;
   
 	// Log reward in history
+	if (!userData.history) {
+	  userData.history = [];
+	}
 	userData.history.push({ type: 'reward', reward, date: new Date().toISOString() });
   
 	await PUNCHCARDS.put(id, JSON.stringify(userData));
@@ -87,7 +83,7 @@ addEventListener('fetch', event => {
 	const id = await getUserId(request);
 	const userData = await getUserData(id);
   
-	return new Response(JSON.stringify(userData.history), {
+	return new Response(JSON.stringify(userData.history || []), {
 	  headers: { 'Content-Type': 'application/json' }
 	});
   }
