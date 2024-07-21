@@ -1,212 +1,326 @@
 document.addEventListener('DOMContentLoaded', () => {
     updateStatus();
-  
-    document.getElementById('add-punch-btn').addEventListener('click', () => {
-      const activityDropdown = document.getElementById('activity-dropdown');
-      const activity = activityDropdown.value === 'other' ? document.getElementById('activity-input').value : activityDropdown.value;
-      addPunch(activity);
-    });
-  
-    document.getElementById('redeem-reward-btn').addEventListener('click', () => {
-      const rewardDropdown = document.getElementById('reward-dropdown');
-      const reward = rewardDropdown.value === 'other' ? document.getElementById('reward-input').value : rewardDropdown.value;
-      redeemReward(reward);
-    });
-  
-    document.getElementById('activity-dropdown').addEventListener('change', (event) => {
-      const input = document.getElementById('activity-input');
-      input.style.display = event.target.value === 'other' ? 'block' : 'none';
-    });
-  
-    document.getElementById('reward-dropdown').addEventListener('change', (event) => {
-      const input = document.getElementById('reward-input');
-      input.style.display = event.target.value === 'other' ? 'block' : 'none';
-    });
-  
-    document.getElementById('history-tab').addEventListener('click', () => {
-      showTab('history');
-    });
-  
-    document.getElementById('analytics-tab').addEventListener('click', () => {
-      showTab('analytics');
-      renderActivityChart();  // Call the function to render the chart when the tab is clicked
-    });
+    fetchHistory();
+    populateActivityButtons();
+    populateDropdowns();
+    openTab(null, 'history'); // Show the History tab by default
   });
   
-  function addPunch(activity) {
-    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/api/punch', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ activity }),
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to add punch');
-      }
-      updateStatus();
-      updateHistory();
-    })
-    .catch(error => {
-      console.error(error);
-    });
-  }
+  function openTab(evt, tabName) {
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => content.style.display = 'none');
   
-  function redeemReward(reward) {
-    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/api/reward', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ reward }),
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to redeem reward');
-      }
-      updateStatus();
-      updateHistory();
-    })
-    .catch(error => {
-      console.error(error);
-    });
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => button.classList.remove('active'));
+  
+    document.getElementById(tabName).style.display = 'block';
+    if (evt) {
+      evt.currentTarget.classList.add('active');
+    } else {
+      document.querySelector(`.tab-button[onclick="openTab(event, '${tabName}')"]`).classList.add('active');
+    }
   }
   
   function updateStatus() {
-    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/api/status')
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/status')
       .then(response => response.json())
       .then(data => {
-        document.getElementById('currentPunches').textContent = data.currentPunches;
-        document.getElementById('unredeemedPunchcards').textContent = data.unredeemedPunchcards;
-        document.getElementById('redeemedPunchcards').textContent = data.redeemedPunchcards;
+        document.getElementById('currentPunches').innerText = `Current Punches: ${data.currentPunches}`;
+        document.getElementById('unredeemedPunchcards').innerText = `Unredeemed Punchcards: ${data.unredeemedPunchcards}`;
+        document.getElementById('redeemedPunchcards').innerText = `Redeemed Punchcards: ${data.redeemedPunchcards}`;
+  
+        const redeemRewardButton = document.querySelector('button[onclick="redeemReward()"]');
+        if (data.unredeemedPunchcards === 0) {
+          redeemRewardButton.disabled = true;
+          redeemRewardButton.style.backgroundColor = '#ccc';
+          redeemRewardButton.style.cursor = 'not-allowed';
+        } else {
+          redeemRewardButton.disabled = false;
+          redeemRewardButton.style.backgroundColor = '#00796b';
+          redeemRewardButton.style.cursor = 'pointer';
+        }
       })
-      .catch(error => {
-        console.error('Error fetching status:', error);
-      });
+      .catch(error => console.error('Error fetching status:', error));
   }
   
-  function updateHistory() {
-    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/api/history')
-      .then(response => response.json())
-      .then(history => {
-        const historyList = document.getElementById('history-list');
-        historyList.innerHTML = '';
-        history.reverse().forEach(entry => {  // Reverse the order of the history entries
-          const listItem = document.createElement('li');
-          listItem.innerHTML = `
-            ${entry.date} ${entry.type === 'punch' ? '🏋️' : '🥧'} ${entry.activity || entry.reward}
-            <button onclick="editLog('${entry.id}')">Edit</button>
-            <button onclick="deleteLog('${entry.id}')">Delete</button>
-          `;
-          historyList.appendChild(listItem);
-        });
-      })
-      .catch(error => {
-        console.error('Error fetching history:', error);
-      });
-  }
-  
-  function showTab(tabName) {
-    document.getElementById('history').style.display = tabName === 'history' ? 'block' : 'none';
-    document.getElementById('analytics').style.display = tabName === 'analytics' ? 'block' : 'none';
-    document.getElementById('history-tab').classList.toggle('active', tabName === 'history');
-    document.getElementById('analytics-tab').classList.toggle('active', tabName === 'analytics');
-  }
-  
-  function addGym() {
-    addPunch('gym');
-  }
-  
-  function addPickleball() {
-    addPunch('pickleball');
-  }
-  
-  function addYoga() {
-    addPunch('yoga');
-  }
-  
-  function editLog(logId) {
-    const newActivity = prompt('Enter the new activity:');
-    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/api/edit', {
+  window.addPunch = function addPunch() {
+    let activity = document.getElementById('activityDropdown').value;
+    if (activity === 'other') {
+      activity = document.getElementById('activity').value;
+    }
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/punch', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ logId, newActivity }),
+      body: JSON.stringify({ activity })
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to edit log');
-      }
-      updateHistory();
-      updateStatus();
+      .then(() => {
+        updateStatus();
+        fetchHistory();
+      })
+      .catch(error => console.error('Error adding punch:', error));
+  }
+  
+  window.redeemReward = function redeemReward() {
+    let reward = document.getElementById('rewardDropdown').value;
+    if (reward === 'other') {
+      reward = document.getElementById('reward').value;
+    }
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/reward', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ reward })
     })
-    .catch(error => {
-      console.error('Error editing log:', error);
-    });
+      .then(() => {
+        updateStatus();
+        fetchHistory();
+      })
+      .catch(error => console.error('Error redeeming reward:', error));
+  }
+  
+  // Function to log the activity directly
+  window.fillActivity = function fillActivity(activity) {
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/punch', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ activity })
+    })
+      .then(() => {
+        updateStatus();
+        fetchHistory();
+      })
+      .catch(error => console.error('Error adding punch:', error));
+  }
+  
+  function fetchHistory() {
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/history')
+      .then(response => response.json())
+      .then(history => {
+        console.log('Fetched history:', history); // Debugging log
+        const historyList = document.getElementById('historyList');
+        historyList.innerHTML = '';
+        history.reverse(); // Reverse the history array to show newest first
+        history.forEach(entry => {
+          const listItem = document.createElement('li');
+          const date = new Date(entry.date).toLocaleDateString();
+  
+          const historyItem = document.createElement('div');
+          historyItem.className = 'history-item';
+  
+          const historyDetails = document.createElement('div');
+          historyDetails.className = 'history-details';
+  
+          const icon = document.createElement('span');
+          icon.className = 'icon';
+          if (entry.type === 'punch') {
+            icon.textContent = activityIcons[entry.activity] || activityIcons["default"];
+            historyItem.classList.add('punch');
+          } else {
+            icon.textContent = rewardIcons[entry.reward] || rewardIcons["default"];
+            historyItem.classList.add('reward');
+          }
+  
+          historyDetails.appendChild(document.createTextNode(date));
+          historyDetails.appendChild(icon);
+          historyDetails.appendChild(document.createTextNode(entry.type === 'punch' ? ` ${entry.activity}` : ` ${entry.reward}`));
+  
+          // Add edit link
+          const editLink = document.createElement('span');
+          editLink.innerHTML = 'Edit';
+          editLink.className = 'edit-link';
+          editLink.onclick = () => editLog(entry.id, entry.activity);
+  
+          // Add delete link
+          const deleteLink = document.createElement('span');
+          deleteLink.innerHTML = 'Delete';
+          deleteLink.className = 'delete-link';
+          deleteLink.onclick = () => {
+            if (confirm('Are you sure you want to delete this log?')) {
+              deleteLog(entry.id);
+            }
+          };
+  
+          const historyButtons = document.createElement('div');
+          historyButtons.className = 'history-buttons';
+          historyButtons.appendChild(editLink);
+          historyButtons.appendChild(deleteLink);
+  
+          historyItem.appendChild(historyDetails);
+          listItem.appendChild(historyItem);
+          listItem.appendChild(historyButtons);
+  
+          historyList.appendChild(listItem);
+        });
+  
+        // Update chart data
+        updateChart(history);
+      })
+      .catch(error => console.error('Error fetching history:', error));
+  }
+  
+  function editLog(logId, currentActivity) {
+    const newActivity = prompt('Enter new activity:', currentActivity);
+    if (newActivity && newActivity !== currentActivity) {
+      fetch('https://my-gym-punchcard.kathyyliao.workers.dev/edit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ logId, newActivity })
+      })
+        .then(() => {
+          updateStatus();
+          fetchHistory();
+        })
+        .catch(error => console.error('Error editing log:', error));
+    }
   }
   
   function deleteLog(logId) {
-    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/api/delete', {
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/delete', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ logId }),
+      body: JSON.stringify({ logId })
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to delete log');
-      }
-      updateHistory();
-      updateStatus();
-    })
-    .catch(error => {
-      console.error('Error deleting log:', error);
+      .then(() => {
+        updateStatus();
+        fetchHistory();
+      })
+      .catch(error => console.error('Error deleting log:', error));
+  }
+  
+  function populateActivityButtons() {
+    const activityButtonsContainer = document.getElementById('activityButtons');
+    activityButtonsContainer.innerHTML = '';
+    popularActivities.forEach(activity => {
+      const button = document.createElement('button');
+      button.innerHTML = `<span>${activityIcons[activity]}</span> ${activity.charAt(0).toUpperCase() + activity.slice(1)}`;
+      button.onclick = () => fillActivity(activity);
+      activityButtonsContainer.appendChild(button);
     });
   }
   
-  function renderActivityChart() {
-    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/api/history')
-      .then(response => response.json())
-      .then(history => {
-        const activityCounts = history.reduce((counts, entry) => {
-          if (entry.type === 'punch') {
-            counts[entry.activity] = (counts[entry.activity] || 0) + 1;
-          }
-          return counts;
-        }, {});
+  function populateDropdowns() {
+    const activityDropdown = document.getElementById('activityDropdown');
+    const rewardDropdown = document.getElementById('rewardDropdown');
   
-        const sortedActivities = Object.entries(activityCounts).sort((a, b) => b[1] - a[1]);
+    // Populate activity dropdown
+    allActivities.forEach(activity => {
+      if (!popularActivities.includes(activity)) { // Exclude popular activities already having buttons
+        const option = document.createElement('option');
+        option.value = activity;
+        option.text = `${activityIcons[activity]} ${activity.charAt(0).toUpperCase() + activity.slice(1)}`;
+        activityDropdown.appendChild(option);
+      }
+    });
+    const otherActivityOption = document.createElement('option');
+    otherActivityOption.value = 'other';
+    otherActivityOption.text = `${activityIcons["other"]} Other`;
+    activityDropdown.appendChild(otherActivityOption);
   
-        const labels = sortedActivities.map(item => item[0]);
-        const data = sortedActivities.map(item => item[1]);
+    // Populate reward dropdown
+    allRewards.forEach(reward => {
+      const option = document.createElement('option');
+      option.value = reward;
+      option.text = `${rewardIcons[reward]} ${reward.charAt(0).toUpperCase() + reward.slice(1)}`;
+      rewardDropdown.appendChild(option);
+    });
+    const otherRewardOption = document.createElement('option');
+    otherRewardOption.value = 'other';
+    otherRewardOption.text = `${rewardIcons["other"]} Other`;
+    rewardDropdown.appendChild(otherRewardOption);
   
-        const ctx = document.getElementById('activityChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: 'Activity Count',
-              data: data,
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1
-            }]
-          },
-          options: {
-            scales: {
-              y: {
-                beginAtZero: true
-              }
+    // Show or hide the input fields based on the selected option
+    activityDropdown.onchange = () => {
+      document.getElementById('activity').style.display = activityDropdown.value === 'other' ? 'block' : 'none';
+    }
+  
+    rewardDropdown.onchange = () => {
+      document.getElementById('reward').style.display = rewardDropdown.value === 'other' ? 'block' : 'none';
+    }
+  }
+  
+  function updateChart(history) {
+    const activityCounts = {};
+    history.forEach(entry => {
+      if (entry.type === 'punch') {
+        activityCounts[entry.activity] = (activityCounts[entry.activity] || 0) + 1;
+      }
+    });
+  
+    const sortedActivities = Object.keys(activityCounts).sort((a, b) => activityCounts[b] - activityCounts[a]);
+    const labels = sortedActivities.map(activity => `${activity} (${activityCounts[activity]})`);
+    const data = sortedActivities.map(activity => activityCounts[activity]);
+  
+    const ctx = document.getElementById('activityChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Activity Count',
+          data: data,
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1 // Ensure only whole numbers are displayed
             }
           }
-        });
-      })
-      .catch(error => {
-        console.error('Error fetching history for analytics:', error);
-      });
+        }
+      }
+    });
   }
+  
+  // Icons for activities and rewards
+  const activityIcons = {
+    'gym': '🏋️‍♀️',
+    'pickleball': '🏓',
+    'yoga': '🧘‍♀️',
+    'walk': '🚶‍♀️',
+    'run': '🏃‍♀️',
+    'hike': '🥾',
+    'default': '👟',
+    'other': '⚡'
+  };
+  
+  const rewardIcons = {
+    'pie': '🥧',
+    'cake': '🎂',
+    'cookies': '🍪',
+    'boba': '🧋',
+    'candy': '🍬',
+    'smoothies': '🍹',
+    'brownies': '🍫',
+    'default': '🎉',
+    'other': '🎁'
+  };
+  
+  // Popular activities to be shown as buttons
+  const popularActivities = ['gym', 'pickleball', 'yoga'];
+  
+  // All activities and rewards
+  const allActivities = ['gym', 'pickleball', 'yoga', 'walk', 'run', 'hike', 'dance', 'snowboarding', 'stairs', 'other'];
+  const allRewards = ['pie', 'cake', 'cookies', 'boba', 'candy', 'smoothies', 'brownies', 'other'];
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    updateStatus();
+    fetchHistory();
+    populateActivityButtons();
+    populateDropdowns();
+    openTab(null, 'history'); // Show the History tab by default
+  });
   

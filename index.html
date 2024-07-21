@@ -9,50 +9,48 @@
 <body>
   <div class="container">
     <h1>Gym Punchcard</h1>
-    <p>Current Punches: <span id="currentPunches">0</span></p>
-    <p>Unredeemed Punchcards: <span id="unredeemedPunchcards">0</span></p>
-    <p>Redeemed Punchcards: <span id="redeemedPunchcards">0</span></p>
+    <div id="currentPunches">Current Punches: 0</div>
+    <div id="unredeemedPunchcards">Unredeemed Punchcards: 0</div>
+    <div id="redeemedPunchcards">Redeemed Punchcards: 0</div>
 
-    <div class="button-row">
-      <button id="add-gym-btn" onclick="addGym()">🏋️‍♀️ Gym</button>
-      <button id="add-pickleball-btn" onclick="addPickleball()">🏓 Pickleball</button>
-      <button id="add-yoga-btn" onclick="addYoga()">🧘 Yoga</button>
+    <div id="activityButtons" class="activity-buttons"></div>
+
+    <div class="activity-reward-section">
+      <div class="dropdown-container">
+        <select id="activityDropdown" class="dropdown">
+          <!-- Options will be populated by JavaScript -->
+        </select>
+        <input type="text" id="activity" placeholder="Enter activity" style="display: none;">
+      </div>
+      <div class="button-container">
+        <button onclick="addPunch()">Add Punch</button>
+      </div>
+      <div class="dropdown-container">
+        <select id="rewardDropdown" class="dropdown">
+          <!-- Options will be populated by JavaScript -->
+        </select>
+        <input type="text" id="reward" placeholder="Enter reward" style="display: none;">
+      </div>
+      <div class="button-container">
+        <button onclick="redeemReward()">Redeem Reward</button>
+      </div>
     </div>
 
-    <div class="dropdown-row">
-      <select id="activity-dropdown">
-        <option value="walk">🚶 Walk</option>
-        <option value="other">Other</option>
-      </select>
-      <input type="text" id="activity-input" style="display:none;" placeholder="Enter activity">
-      <button id="add-punch-btn">Add Punch</button>
+    <div class="tab-container">
+      <button class="tab-button active" onclick="openTab(event, 'history')">History</button>
+      <button class="tab-button" onclick="openTab(event, 'analytics')">Analytics</button>
     </div>
 
-    <div class="dropdown-row">
-      <select id="reward-dropdown">
-        <option value="pie">🥧 Pie</option>
-        <option value="other">Other</option>
-      </select>
-      <input type="text" id="reward-input" style="display:none;" placeholder="Enter reward">
-      <button id="redeem-reward-btn">Redeem Reward</button>
-    </div>
-
-    <div id="tabs">
-      <button id="history-tab" class="active">History</button>
-      <button id="analytics-tab">Analytics</button>
-    </div>
-
-    <div id="history" class="tab-content">
+    <div id="history" class="tab-content active">
       <h2>History</h2>
-      <ul id="history-list"></ul>
+      <ul id="historyList"></ul>
     </div>
 
-    <div id="analytics" class="tab-content" style="display:none;">
+    <div id="analytics" class="tab-content">
       <h2>Activity Analytics</h2>
       <canvas id="activityChart"></canvas>
     </div>
   </div>
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="scripts.js"></script>
 </body>

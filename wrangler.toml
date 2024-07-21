@@ -3,5 +3,5 @@ main = "src/index.js"
 compatibility_date = "2024-07-16"
 
 kv_namespaces = [
-  { binding = "PUNCHCARDS", id = "483e62b1ce1e405aae7ad348f4fcdc91"  }
+  { binding = "PUNCHCARDS", id = "483e62b1ce1e405aae7ad348f4fcdc91", preview_id = "483e62b1ce1e405aae7ad348f4fcdc91" }
 ]

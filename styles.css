@@ -1,71 +1,183 @@
+/* General styles */
 body {
     font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f8ff;
+    overflow-y: auto; /* Allow vertical scrolling */
   }
   
   .container {
-    max-width: 600px;
-    margin: 0 auto;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 400px;
+    width: 100%;
     text-align: center;
   }
   
+  h1 {
+    margin-top: 0;
+    color: #00796b;
+  }
+  
   button {
-    padding: 10px 20px;
-    margin: 5px;
-    cursor: pointer;
-  }
-  
-  button.active {
-    background-color: #4CAF50;
+    background-color: #00796b;
     color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s ease;
+    box-sizing: border-box;
+    width: calc(50% - 10px);
   }
   
-  #tabs {
-    margin-top: 20px;
+  button:hover {
+    background-color: #004d40;
   }
   
-  .tab-content {
+  button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  input, select {
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 5px;
+    width: calc(100% - 22px);
+    box-sizing: border-box;
+  }
+  
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: url('data:image/svg+xml;charset=US-ASCII,<svg%20xmlns="http://www.w3.org/2000/svg"%20viewBox="0%200%204%205"><path%20fill="none"%20stroke="black"%20stroke-width="1.1"%20d="M1%201L2%204L3%201"/><path%20fill="none"%20stroke="none"%20d="M0%200h4v5H0z"/></svg>') no-repeat right 10px center;
+  }
+  
+  select::-ms-expand {
     display: none;
   }
   
-  #history, #analytics {
-    display: block;
-  }
-  
-  #activity-input, #reward-input {
-    display: none;
-  }
-  
-  #history-list {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  #history-list li {
-    margin-bottom: 10px;
+  /* Styles for activity buttons */
+  .activity-buttons {
     display: flex;
     justify-content: space-between;
   }
   
-  #activity-dropdown, #reward-dropdown {
-    padding: 10px;
-    margin: 5px;
+  .activity-buttons button {
+    width: calc(33.33% - 10px); /* Three buttons in a row with some margin */
+    margin: 5px 5px 0;
+    box-sizing: border-box;
   }
   
-  #activity-dropdown::after, #reward-dropdown::after {
-    content: '▾';
-    margin-left: 5px;
+  /* Layout adjustments */
+  .activity-reward-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  
+  .dropdown-container {
+    flex: 1 1 45%;
+    margin: 5px;
+    box-sizing: border-box;
+  }
+  
+  .button-container {
+    flex: 1 1 45%;
+    margin: 5px;
+    box-sizing: border-box;
+  }
+  
+  /* Styles for history and analytics */
+  .history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .history-details {
+    display: flex;
+    align-items: center;
+  }
+  
+  .icon {
+    margin-right: 5px;
+  }
+  
+  .history-buttons span {
+    margin-left: 10px;
+    cursor: pointer;
+  }
+  
+  .edit-link {
+    color: blue;
+  }
+  
+  .delete-link {
+    color: red;
+  }
+  
+  #historyList {
+    max-height: 300px; /* Adjust height as needed */
+    overflow-y: auto;
+    padding: 0;
+    list-style: none;
+  }
+  
+  /* Styles for tabs */
+  .tab-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .tab-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    background-color: transparent;
+    color: #00796b;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    border-bottom: 2px solid transparent;
+    margin: 0 5px;
+  }
+  
+  .tab-button:hover {
+    color: #004d40;
+  }
+  
+  .tab-button.active {
+    color: #004d40;
+    border-bottom: 2px solid #004d40;
   }
   
   .tab-content {
     display: none;
   }
   
-  #history {
+  .tab-content.active {
     display: block;
   }
   
-  #history-tab.active, #analytics-tab.active {
-    font-weight: bold;
-    border-bottom: 2px solid #4CAF50;
+  /* Chart.js canvas container */
+  #activityChart {
+    max-width: 100%;
+    height: auto;
   }
   
