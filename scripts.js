@@ -202,12 +202,12 @@ const activityIcons = {
       },
       body: JSON.stringify({ logId })
     })
-      .then(() => {
-        updateStatus();
-        fetchHistory();
-      })
-      .catch(error => console.error('Error deleting log:', error));
-  }
+    .then(() => {
+      updateStatus();
+      fetchHistory();
+    })
+    .catch(error => console.error('Error deleting log:', error));
+  }  
   
   function populateActivityButtons() {
     const activityButtonsContainer = document.getElementById('activityButtons');

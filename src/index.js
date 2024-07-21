@@ -6,21 +6,32 @@ addEventListener('fetch', event => {
 	const url = new URL(request.url);
 	const path = url.pathname.split('/').filter(Boolean);
   
-	let response;
-	
-	if (path[0] === 'punch') {
-	  response = await handlePunch(request);
-	} else if (path[0] === 'status') {
-	  response = await handleStatus(request);
-	} else if (path[0] === 'reward') {
-	  response = await handleReward(request);
-	} else if (path[0] === 'history') {
-	  response = await handleHistory(request);
-	} else {
-	  response = new Response('Not found', { status: 404 });
+	if (request.method === 'OPTIONS') {
+	  return handleOptions(request);
 	}
   
-	response = new Response(response.body, response); // Clone the response to add headers
+	let response;
+  
+	try {
+	  if (path[0] === 'punch') {
+		response = await handlePunch(request);
+	  } else if (path[0] === 'status') {
+		response = await handleStatus(request);
+	  } else if (path[0] === 'reward') {
+		response = await handleReward(request);
+	  } else if (path[0] === 'history') {
+		response = await handleHistory(request);
+	  } else if (path[0] === 'delete') {
+		response = await handleDelete(request); // Add this line
+	  } else {
+		response = new Response('Not found', { status: 404 });
+	  }
+	} catch (error) {
+	  console.error('Error handling request:', error);
+	  response = new Response('Internal Server Error', { status: 500 });
+	}
+  
+	// Ensure headers are added to every response
 	response.headers.set('Access-Control-Allow-Origin', 'https://gym-punchcard.pages.dev');
 	response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 	response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
@@ -28,6 +39,30 @@ addEventListener('fetch', event => {
 	return response;
   }
   
+  function handleOptions(request) {
+	// Create a response for OPTIONS request with the necessary CORS headers
+	const headers = {
+	  'Access-Control-Allow-Origin': 'https://gym-punchcard.pages.dev',
+	  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+	  'Access-Control-Allow-Headers': 'Content-Type'
+	};
+	return new Response(null, { headers });
+  }
+  
+  // Add this function to handle delete requests
+  async function handleDelete(request) {
+	const { logId } = await request.json();
+	const id = await getUserId(request);
+	const userData = await getUserData(id);
+  
+	userData.history = userData.history.filter(entry => entry.id !== logId);
+  
+	await PUNCHCARDS.put(id, JSON.stringify(userData));
+  
+	return new Response('Log entry deleted');
+  }
+  
+  // Existing functions...
   async function handlePunch(request) {
 	const { activity } = await request.json();
 	const id = await getUserId(request);
@@ -49,7 +84,7 @@ addEventListener('fetch', event => {
 	if (!userData.history) {
 	  userData.history = [];
 	}
-	userData.history.push({ type: 'punch', activity, date: new Date().toISOString() });
+	userData.history.push({ id: Date.now().toString(), type: 'punch', activity, date: new Date().toISOString() });
   
 	await PUNCHCARDS.put(id, JSON.stringify(userData));
   
@@ -72,7 +107,7 @@ addEventListener('fetch', event => {
 	if (!userData.history) {
 	  userData.history = [];
 	}
-	userData.history.push({ type: 'reward', reward, date: new Date().toISOString() });
+	userData.history.push({ id: Date.now().toString(), type: 'reward', reward, date: new Date().toISOString() });
   
 	await PUNCHCARDS.put(id, JSON.stringify(userData));
   
