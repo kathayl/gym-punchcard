@@ -1,25 +1,49 @@
-document.addEventListener('DOMContentLoaded', () => {
+// scripts.js
+
+// Define icon mappings for activities and rewards
+const activityIcons = {
+    "walk": "🚶‍♀️",
+    "run": "🏃‍♀️",
+    "gym": "🏋️‍♀️",
+    "hike": "🥾",
+    "pickleball": "🏓",
+    "yoga": "🧘‍♀️",
+    "pilates": "🤸‍♀️",
+    "dance": "💃",
+    "snowboarding": "🏂",
+    "stairs": "🪜",
+    "other": "❓",
+    // Add more activities as needed
+    "default": "🏃‍♂️" // Default icon for activities not explicitly listed
+  };
+  
+  const rewardIcons = {
+    "pie": "🥧",
+    "cake": "🎂",
+    "ice cream": "🍦",
+    "brownies": "🍫",
+    "cookies": "🍪",
+    "boba": "🧋",
+    "candy": "🍬",
+    "smoothies": "🥤",
+    "other": "❓",
+    // Add more rewards as needed
+    "default": "🎉" // Default icon for rewards not explicitly listed
+  };
+  
+  // Most popular activities
+  const popularActivities = ["gym", "pickleball", "yoga"];
+  // All activities including the popular ones
+  const allActivities = ["walk", "run", "gym", "hike", "pickleball", "yoga", "pilates", "dance", "snowboarding", "stairs"];
+  
+  const allRewards = ["pie", "cake", "ice cream", "brownies", "cookies", "boba", "candy", "smoothies"];
+  
+  document.addEventListener('DOMContentLoaded', () => {
     updateStatus();
     fetchHistory();
     populateActivityButtons();
     populateDropdowns();
-    openTab(null, 'history'); // Show the History tab by default
   });
-  
-  function openTab(evt, tabName) {
-    const tabContents = document.querySelectorAll('.tab-content');
-    tabContents.forEach(content => content.style.display = 'none');
-  
-    const tabButtons = document.querySelectorAll('.tab-button');
-    tabButtons.forEach(button => button.classList.remove('active'));
-  
-    document.getElementById(tabName).style.display = 'block';
-    if (evt) {
-      evt.currentTarget.classList.add('active');
-    } else {
-      document.querySelector(`.tab-button[onclick="openTab(event, '${tabName}')"]`).classList.add('active');
-    }
-  }
   
   function updateStatus() {
     fetch('https://my-gym-punchcard.kathyyliao.workers.dev/status')
@@ -42,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(error => console.error('Error fetching status:', error));
   }
+  
   
   window.addPunch = function addPunch() {
     let activity = document.getElementById('activityDropdown').value;
@@ -284,43 +309,4 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-  
-  // Icons for activities and rewards
-  const activityIcons = {
-    'gym': '🏋️‍♀️',
-    'pickleball': '🏓',
-    'yoga': '🧘‍♀️',
-    'walk': '🚶‍♀️',
-    'run': '🏃‍♀️',
-    'hike': '🥾',
-    'default': '👟',
-    'other': '⚡'
-  };
-  
-  const rewardIcons = {
-    'pie': '🥧',
-    'cake': '🎂',
-    'cookies': '🍪',
-    'boba': '🧋',
-    'candy': '🍬',
-    'smoothies': '🍹',
-    'brownies': '🍫',
-    'default': '🎉',
-    'other': '🎁'
-  };
-  
-  // Popular activities to be shown as buttons
-  const popularActivities = ['gym', 'pickleball', 'yoga'];
-  
-  // All activities and rewards
-  const allActivities = ['gym', 'pickleball', 'yoga', 'walk', 'run', 'hike', 'dance', 'snowboarding', 'stairs', 'other'];
-  const allRewards = ['pie', 'cake', 'cookies', 'boba', 'candy', 'smoothies', 'brownies', 'other'];
-  
-  document.addEventListener('DOMContentLoaded', () => {
-    updateStatus();
-    fetchHistory();
-    populateActivityButtons();
-    populateDropdowns();
-    openTab(null, 'history'); // Show the History tab by default
-  });
   
