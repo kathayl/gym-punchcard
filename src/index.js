@@ -55,12 +55,33 @@ addEventListener('fetch', event => {
 	const id = await getUserId(request);
 	const userData = await getUserData(id);
   
-	userData.history = userData.history.filter(entry => entry.id !== logId);
+	// Find the entry to be deleted
+	const entryIndex = userData.history.findIndex(entry => entry.id === logId);
+	if (entryIndex === -1) {
+	  return new Response('Log entry not found', { status: 404 });
+	}
   
+	const entry = userData.history[entryIndex];
+  
+	// Update counts based on the type of entry
+	if (entry.type === 'punch') {
+	  userData.currentPunches -= 1;
+	  if (userData.currentPunches < 0 && userData.unredeemedPunchcards > 0) {
+		userData.unredeemedPunchcards -= 1;
+		userData.currentPunches += 5;
+	  }
+	} else if (entry.type === 'reward') {
+	  userData.redeemedPunchcards -= 1;
+	}
+  
+	// Remove the entry from history
+	userData.history.splice(entryIndex, 1);
+  
+	// Save the updated user data
 	await PUNCHCARDS.put(id, JSON.stringify(userData));
   
 	return new Response('Log entry deleted');
-  }
+  }  
   
   // Existing functions...
   async function handlePunch(request) {

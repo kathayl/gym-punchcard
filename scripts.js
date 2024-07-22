@@ -202,12 +202,12 @@ const activityIcons = {
       },
       body: JSON.stringify({ logId })
     })
-    .then(() => {
-      updateStatus();
-      fetchHistory();
-    })
-    .catch(error => console.error('Error deleting log:', error));
-  }  
+      .then(() => {
+        updateStatus();
+        fetchHistory();
+      })
+      .catch(error => console.error('Error deleting log:', error));
+  }
   
   function populateActivityButtons() {
     const activityButtonsContainer = document.getElementById('activityButtons');
@@ -268,8 +268,9 @@ const activityIcons = {
       }
     });
   
-    const labels = Object.keys(activityCounts);
-    const data = Object.values(activityCounts);
+    const sortedActivities = Object.keys(activityCounts).sort((a, b) => activityCounts[b] - activityCounts[a]);
+    const labels = sortedActivities.map(activity => `${activity} (${activityCounts[activity]})`);
+    const data = sortedActivities.map(activity => activityCounts[activity]);
   
     const ctx = document.getElementById('activityChart').getContext('2d');
     new Chart(ctx, {
@@ -287,7 +288,10 @@ const activityIcons = {
       options: {
         scales: {
           y: {
-            beginAtZero: true
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1 // Ensure only whole numbers are displayed
+            }
           }
         }
       }
