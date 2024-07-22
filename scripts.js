@@ -65,7 +65,7 @@ const activityIcons = {
         }
       })
       .catch(error => console.error('Error fetching status:', error));
-  }  
+  }
   
   window.addPunch = function addPunch() {
     let activity = document.getElementById('activityDropdown').value;
@@ -253,7 +253,7 @@ const activityIcons = {
     allRewards.forEach(reward => {
       const option = document.createElement('option');
       option.value = reward;
-      option.text = `${rewardIcons[reward]} ${reward.charAt(0).toUpperCase() + reward.slice(1)    }`;
+      option.text = `${rewardIcons[reward]} ${reward.charAt(0).toUpperCase() + reward.slice(1)}`;
       rewardDropdown.appendChild(option);
     });
     const otherRewardOption = document.createElement('option');
@@ -330,3 +330,4 @@ const activityIcons = {
       document.querySelector(`.tab-button[onclick="openTab(event, '${tabName}')"]`).classList.add('active');
     }
   }
+  
