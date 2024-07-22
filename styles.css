@@ -8,6 +8,7 @@ body {
     background-color: #e0f7fa;
     margin: 0;
     font-family: 'Roboto', sans-serif;
+    background-image: url('https://www.transparenttextures.com/patterns/white-sand.png'); /* Example pattern, you can use a different one */
   }
   
   .punchcard {
@@ -29,6 +30,11 @@ body {
     to { opacity: 1; }
   }
   
+  h1, .history-header {
+    font-family: 'Roboto', sans-serif;
+    color: #00796b; /* Adjust this color if needed */
+  }
+  
   .punchcard h1 {
     color: #00796b;
     margin-bottom: 10px;
@@ -48,16 +54,24 @@ body {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
   .punchcard button:hover {
     background-color: #004d40;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+  }
+  
+  .punchcard button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    box-shadow: none;
   }
   
   .input-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* Center buttons horizontally */
     margin-bottom: 10px;
   }
   
@@ -72,7 +86,7 @@ body {
   }
   
   .input-container button {
-    flex: 1;
+    flex: none; /* Prevent buttons from stretching */
     margin-left: 5px;
     padding: 10px;
     font-size: 1em;
@@ -82,12 +96,12 @@ body {
   
   .activity-buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* Center buttons horizontally */
     margin-bottom: 10px;
   }
   
   .activity-buttons button {
-    flex: 1;
+    flex: none; /* Prevent buttons from stretching */
     margin: 5px;
     padding: 10px;
     font-size: 1em;
@@ -99,11 +113,13 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
   .activity-buttons button:hover {
     background-color: #004d40;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
   }
   
   .activity-buttons button span {
@@ -138,7 +154,7 @@ body {
     background-color: #00796b;
     color: white;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, border-bottom 0.3s ease;
     border-radius: 8px 8px 0 0;
   }
   
@@ -148,6 +164,7 @@ body {
   
   .tab-button.active {
     background-color: #004d40;
+    border-bottom: 2px solid #fff; /* Add a border to indicate the active tab */
   }
   
   .tab-content {
@@ -174,6 +191,8 @@ body {
     margin: 5px 0;
     font-size: 1em;
     color: #000;
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
   }
   
   .history-item {
@@ -220,7 +239,12 @@ body {
   }
   
   .icon {
-    margin-right: 8px;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    text-align: center;
+    font-size: 24px;
+    margin-right: 10px;
     vertical-align: middle; /* Ensure icon is vertically aligned with text */
   }
   
