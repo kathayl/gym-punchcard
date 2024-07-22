@@ -13,7 +13,6 @@ const activityIcons = {
     "snowboarding": "🏂",
     "stairs": "🪜",
     "other": "❓",
-    // Add more activities as needed
     "default": "🏃‍♂️" // Default icon for activities not explicitly listed
   };
   
@@ -27,7 +26,6 @@ const activityIcons = {
     "candy": "🍬",
     "smoothies": "🥤",
     "other": "❓",
-    // Add more rewards as needed
     "default": "🎉" // Default icon for rewards not explicitly listed
   };
   
