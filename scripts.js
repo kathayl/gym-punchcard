@@ -43,6 +43,7 @@ const activityIcons = {
     fetchHistory();
     populateActivityButtons();
     populateDropdowns();
+    openTab(null, 'history'); // Default to the History tab
   });
   
   function updateStatus() {
@@ -52,9 +53,19 @@ const activityIcons = {
         document.getElementById('currentPunches').innerText = `Current Punches: ${data.currentPunches}`;
         document.getElementById('unredeemedPunchcards').innerText = `Unredeemed Punchcards: ${data.unredeemedPunchcards}`;
         document.getElementById('redeemedPunchcards').innerText = `Redeemed Punchcards: ${data.redeemedPunchcards}`;
+        const redeemButton = document.querySelector('button[onclick="redeemReward()"]');
+        if (data.unredeemedPunchcards > 0) {
+          redeemButton.disabled = false;
+          redeemButton.style.backgroundColor = '#00796b';
+          redeemButton.style.cursor = 'pointer';
+        } else {
+          redeemButton.disabled = true;
+          redeemButton.style.backgroundColor = '#cccccc';
+          redeemButton.style.cursor = 'not-allowed';
+        }
       })
       .catch(error => console.error('Error fetching status:', error));
-  }
+  }  
   
   window.addPunch = function addPunch() {
     let activity = document.getElementById('activityDropdown').value;
@@ -305,4 +316,17 @@ const activityIcons = {
     }
   }
   
+  function openTab(evt, tabName) {
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => content.style.display = 'none');
   
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => button.classList.remove('active'));
+  
+    document.getElementById(tabName).style.display = 'block';
+    if (evt) {
+      evt.currentTarget.classList.add('active');
+    } else {
+      document.querySelector(`.tab-button[onclick="openTab(event, '${tabName}')"]`).classList.add('active');
+    }
+  }

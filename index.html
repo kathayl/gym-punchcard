@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gym Punchcard</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Add this line -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="punchcard">
@@ -30,10 +30,18 @@
       <input type="text" id="reward" placeholder="Enter other reward" style="display: none;">
       <button onclick="redeemReward()">Redeem Reward</button>
     </div>
-    <h2 class="history-header">History</h2>
-    <ul id="historyList"></ul>
-    <h2 class="history-header">Activity Analytics</h2>
-    <canvas id="activityChart" width="400" height="200"></canvas> <!-- Add this line -->
+    <div class="tab-container">
+      <button class="tab-button active" onclick="openTab(event, 'history')">History</button>
+      <button class="tab-button" onclick="openTab(event, 'analytics')">Analytics</button>
+    </div>
+    <div id="history" class="tab-content" style="display: block;">
+      <h2 class="history-header">History</h2>
+      <ul id="historyList"></ul>
+    </div>
+    <div id="analytics" class="tab-content" style="display: none;">
+      <h2 class="history-header">Activity Analytics</h2>
+      <canvas id="activityChart" width="400" height="200"></canvas>
+    </div>
   </div>
   <script src="scripts.js"></script>
 </body>
