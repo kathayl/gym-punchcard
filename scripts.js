@@ -36,6 +36,8 @@ const activityIcons = {
   
   const allRewards = ["pie", "cake", "ice cream", "brownies", "cookies", "boba", "candy", "smoothies"];
   
+  let activityChart; // Global variable to store the chart instance
+  
   document.addEventListener('DOMContentLoaded', () => {
     updateStatus();
     fetchHistory();
@@ -66,11 +68,11 @@ const activityIcons = {
       },
       body: JSON.stringify({ activity })
     })
-      .then(() => {
-        updateStatus();
-        fetchHistory();
-      })
-      .catch(error => console.error('Error adding punch:', error));
+    .then(() => {
+      updateStatus();
+      fetchHistory(); // Ensure fetchHistory is called to update the chart
+    })
+    .catch(error => console.error('Error adding punch:', error));
   }
   
   window.redeemReward = function redeemReward() {
@@ -85,11 +87,11 @@ const activityIcons = {
       },
       body: JSON.stringify({ reward })
     })
-      .then(() => {
-        updateStatus();
-        fetchHistory();
-      })
-      .catch(error => console.error('Error redeeming reward:', error));
+    .then(() => {
+      updateStatus();
+      fetchHistory(); // Ensure fetchHistory is called to update the chart
+    })
+    .catch(error => console.error('Error redeeming reward:', error));
   }
   
   // Function to log the activity directly
@@ -101,11 +103,11 @@ const activityIcons = {
       },
       body: JSON.stringify({ activity })
     })
-      .then(() => {
-        updateStatus();
-        fetchHistory();
-      })
-      .catch(error => console.error('Error adding punch:', error));
+    .then(() => {
+      updateStatus();
+      fetchHistory(); // Ensure fetchHistory is called to update the chart
+    })
+    .catch(error => console.error('Error adding punch:', error));
   }
   
   function fetchHistory() {
@@ -184,11 +186,11 @@ const activityIcons = {
         },
         body: JSON.stringify({ logId, newActivity })
       })
-        .then(() => {
-          updateStatus();
-          fetchHistory();
-        })
-        .catch(error => console.error('Error editing log:', error));
+      .then(() => {
+        updateStatus();
+        fetchHistory(); // Ensure fetchHistory is called to update the chart
+      })
+      .catch(error => console.error('Error editing log:', error));
     }
   }
   
@@ -200,11 +202,11 @@ const activityIcons = {
       },
       body: JSON.stringify({ logId })
     })
-      .then(() => {
-        updateStatus();
-        fetchHistory();
-      })
-      .catch(error => console.error('Error deleting log:', error));
+    .then(() => {
+      updateStatus();
+      fetchHistory(); // Ensure fetchHistory is called to update the chart
+    })
+    .catch(error => console.error('Error deleting log:', error));
   }
   
   function populateActivityButtons() {
@@ -240,7 +242,7 @@ const activityIcons = {
     allRewards.forEach(reward => {
       const option = document.createElement('option');
       option.value = reward;
-      option.text = `${rewardIcons[reward]} ${reward.charAt(0).toUpperCase() + reward.slice(1)}`;
+      option.text = `${rewardIcons[reward]} ${reward.charAt(0).toUpperCase() + reward.slice(1)    }`;
       rewardDropdown.appendChild(option);
     });
     const otherRewardOption = document.createElement('option');
@@ -271,28 +273,36 @@ const activityIcons = {
     const data = sortedActivities.map(activity => activityCounts[activity]);
   
     const ctx = document.getElementById('activityChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Activity Count',
-          data: data,
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              stepSize: 1 // Ensure only whole numbers are displayed
+  
+    if (activityChart) {
+      activityChart.data.labels = labels;
+      activityChart.data.datasets[0].data = data;
+      activityChart.update();
+    } else {
+      activityChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Activity Count',
+            data: data,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1 // Ensure only whole numbers are displayed
+              }
             }
           }
         }
-      }
-    });
+      });
+    }
   }
+  
   
