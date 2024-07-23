@@ -6,56 +6,84 @@ addEventListener('fetch', event => {
 	const url = new URL(request.url);
 	const path = url.pathname.split('/').filter(Boolean);
   
-	if (request.method === 'OPTIONS') {
-	  return handleOptions(request);
+	if (path[0] === 'register' && request.method === 'POST') {
+	  return handleRegister(request);
+	} else if (path[0] === 'reset' && request.method === 'POST') {
+	  return handleReset(request);
 	}
   
-	let response;
-  
-	try {
-	  if (path[0] === 'punch') {
-		response = await handlePunch(request);
-	  } else if (path[0] === 'status') {
-		response = await handleStatus(request);
-	  } else if (path[0] === 'reward') {
-		response = await handleReward(request);
-	  } else if (path[0] === 'history') {
-		response = await handleHistory(request);
-	  } else if (path[0] === 'delete') {
-		response = await handleDelete(request); // Add this line
-	  } else {
-		response = new Response('Not found', { status: 404 });
-	  }
-	} catch (error) {
-	  console.error('Error handling request:', error);
-	  response = new Response('Internal Server Error', { status: 500 });
+	// Add the user ID check for other routes
+	const userId = url.searchParams.get('userId');
+	if (!userId) {
+	  return new Response('User ID not provided', { status: 400 });
 	}
   
-	// Ensure headers are added to every response
-	response.headers.set('Access-Control-Allow-Origin', 'https://gym-punchcard.pages.dev');
-	response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-	response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
-  
-	return response;
+	if (path[0] === 'punch') {
+	  return handlePunch(request, userId);
+	} else if (path[0] === 'status') {
+	  return handleStatus(request, userId);
+	} else if (path[0] === 'history') {
+	  return handleHistory(request, userId);
+	} else if (path[0] === 'delete') {
+	  return handleDelete(request, userId);
+	} else {
+	  return new Response('Not found', { status: 404 });
+	}
   }
   
-  function handleOptions(request) {
-	// Create a response for OPTIONS request with the necessary CORS headers
-	const headers = {
-	  'Access-Control-Allow-Origin': 'https://gym-punchcard.pages.dev',
-	  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-	  'Access-Control-Allow-Headers': 'Content-Type'
-	};
-	return new Response(null, { headers });
+  async function handleRegister(request) {
+	const { name } = await request.json();
+	const userId = generateUniqueId(name);
+	const userUrl = `https://your-app-url.com/?userId=${userId}`;
+	return new Response(userUrl);
   }
   
-  // Add this function to handle delete requests
-  async function handleDelete(request) {
+  function generateUniqueId(name) {
+	return name.toLowerCase() + '-' + Math.random().toString(36).substr(2, 9);
+  }
+  
+  async function handleReset(request) {
+	const { userId } = await request.json();
+	const initialData = { currentPunches: 0, unredeemedPunchcards: 0, redeemedPunchcards: 0, history: [] };
+	await PUNCHCARDS.put(`user:${userId}:data`, JSON.stringify(initialData));
+	
+	return new Response('User data reset');
+  }
+  
+  async function handlePunch(request, userId) {
+	const { activity } = await request.json();
+	const userData = await getUserData(userId);
+  
+	userData.currentPunches += 1;
+	if (userData.currentPunches >= 5) {
+	  userData.unredeemedPunchcards += 1;
+	  userData.currentPunches = 0;
+	}
+  
+	userData.history.push({ id: Date.now().toString(), type: 'punch', activity, date: new Date().toISOString() });
+  
+	await PUNCHCARDS.put(`user:${userId}:data`, JSON.stringify(userData));
+	return new Response(`Punch added! Current punches: ${userData.currentPunches}`);
+  }
+  
+  async function handleStatus(request, userId) {
+	const userData = await getUserData(userId);
+	return new Response(JSON.stringify(userData), {
+	  headers: { 'Content-Type': 'application/json' }
+	});
+  }
+  
+  async function handleHistory(request, userId) {
+	const userData = await getUserData(userId);
+	return new Response(JSON.stringify(userData.history || []), {
+	  headers: { 'Content-Type': 'application/json' }
+	});
+  }
+  
+  async function handleDelete(request, userId) {
 	const { logId } = await request.json();
-	const id = await getUserId(request);
-	const userData = await getUserData(id);
+	const userData = await getUserData(userId);
   
-	// Find the entry to be deleted
 	const entryIndex = userData.history.findIndex(entry => entry.id === logId);
 	if (entryIndex === -1) {
 	  return new Response('Log entry not found', { status: 404 });
@@ -63,7 +91,6 @@ addEventListener('fetch', event => {
   
 	const entry = userData.history[entryIndex];
   
-	// Update counts based on the type of entry
 	if (entry.type === 'punch') {
 	  userData.currentPunches -= 1;
 	  if (userData.currentPunches < 0 && userData.unredeemedPunchcards > 0) {
@@ -74,93 +101,25 @@ addEventListener('fetch', event => {
 	  userData.redeemedPunchcards -= 1;
 	}
   
-	// Remove the entry from history
 	userData.history.splice(entryIndex, 1);
   
-	// Save the updated user data
-	await PUNCHCARDS.put(id, JSON.stringify(userData));
-  
+	await PUNCHCARDS.put(`user:${userId}:data`, JSON.stringify(userData));
 	return new Response('Log entry deleted');
-  }  
-  
-  // Existing functions...
-  async function handlePunch(request) {
-	const { activity } = await request.json();
-	const id = await getUserId(request);
-	const userData = await getUserData(id);
-  
-	if (userData.currentPunches >= 5) {
-	  userData.unredeemedPunchcards += 1;
-	  userData.currentPunches = 0;
-	}
-  
-	userData.currentPunches += 1;
-  
-	if (userData.currentPunches >= 5) {
-	  userData.unredeemedPunchcards += 1;
-	  userData.currentPunches = 0;
-	}
-  
-	// Log activity in history
-	if (!userData.history) {
-	  userData.history = [];
-	}
-	userData.history.push({ id: Date.now().toString(), type: 'punch', activity, date: new Date().toISOString() });
-  
-	await PUNCHCARDS.put(id, JSON.stringify(userData));
-  
-	return new Response(`Punch added! Current punches: ${userData.currentPunches}`);
   }
   
-  async function handleReward(request) {
-	const { reward } = await request.json();
-	const id = await getUserId(request);
-	const userData = await getUserData(id);
+  async function getUserData(userId) {
+	let userData = await PUNCHCARDS.get(`user:${userId}:data`);
   
-	if (userData.unredeemedPunchcards < 1) {
-	  return new Response('No unredeemed punchcards available.', { status: 400 });
+	if (!userData) {
+	  userData = await PUNCHCARDS.get(`data`);
+	  if (userData) {
+		await PUNCHCARDS.put(`user:${userId}:data`, userData);
+		await PUNCHCARDS.delete(`data`);
+	  } else {
+		userData = JSON.stringify({ currentPunches: 0, unredeemedPunchcards: 0, redeemedPunchcards: 0, history: [] });
+	  }
 	}
   
-	userData.unredeemedPunchcards -= 1;
-	userData.redeemedPunchcards += 1;
-  
-	// Log reward in history
-	if (!userData.history) {
-	  userData.history = [];
-	}
-	userData.history.push({ id: Date.now().toString(), type: 'reward', reward, date: new Date().toISOString() });
-  
-	await PUNCHCARDS.put(id, JSON.stringify(userData));
-  
-	return new Response('Reward claimed! Punchcard reset.');
-  }
-  
-  async function handleHistory(request) {
-	const id = await getUserId(request);
-	const userData = await getUserData(id);
-  
-	return new Response(JSON.stringify(userData.history || []), {
-	  headers: { 'Content-Type': 'application/json' }
-	});
-  }
-  
-  async function handleStatus(request) {
-	const id = await getUserId(request);
-	const userData = await getUserData(id);
-  
-	return new Response(JSON.stringify(userData), {
-	  headers: { 'Content-Type': 'application/json' }
-	});
-  }
-  
-  async function getUserId(request) {
-	// Implement a way to identify users, e.g., via cookies, headers, etc.
-	// For simplicity, let's use a fixed user ID.
-	return 'user-123';
-  }
-  
-  async function getUserData(id) {
-	const userData = await PUNCHCARDS.get(id);
-	return userData ? JSON.parse(userData) : { currentPunches: 0, unredeemedPunchcards: 0, redeemedPunchcards: 0, history: [] };
+	return JSON.parse(userData);
   }
   
