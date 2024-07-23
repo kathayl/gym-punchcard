@@ -31,7 +31,6 @@ addEventListener('fetch', event => {
 	  response = new Response('Internal Server Error', { status: 500 });
 	}
   
-	// **Ensure headers are added to every response**
 	response.headers.set('Access-Control-Allow-Origin', 'https://gym-punchcard.pages.dev');
 	response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 	response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
@@ -146,7 +145,7 @@ addEventListener('fetch', event => {
 	return new Response('Log entry deleted');
   }
   
-  // **Get the user ID from the request cookies**
+  // Ensure the user ID is retrieved from the request cookies
   async function getUserId(request) {
 	const cookieHeader = request.headers.get('Cookie');
 	if (!cookieHeader) {
@@ -167,7 +166,7 @@ addEventListener('fetch', event => {
 	return userId;
   }
   
-  // **Get user data from KV store**
+  // Ensure user data is retrieved from KV store
   async function getUserData(userId) {
 	const userData = await PUNCHCARDS.get(`user_${userId}_data`);
 	return userData ? JSON.parse(userData) : { currentPunches: 0, unredeemedPunchcards: 0, redeemedPunchcards: 0, history: [] };
