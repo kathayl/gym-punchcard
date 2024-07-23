@@ -22,7 +22,7 @@ addEventListener('fetch', event => {
 	  } else if (path[0] === 'history') {
 		response = await handleHistory(request);
 	  } else if (path[0] === 'delete') {
-		response = await handleDelete(request); // Add this line
+		response = await handleDelete(request);
 	  } else {
 		response = new Response('Not found', { status: 404 });
 	  }
@@ -31,59 +31,25 @@ addEventListener('fetch', event => {
 	  response = new Response('Internal Server Error', { status: 500 });
 	}
   
-	// Ensure headers are added to every response
+	// **Ensure headers are added to every response**
 	response.headers.set('Access-Control-Allow-Origin', 'https://gym-punchcard.pages.dev');
 	response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 	response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+	response.headers.set('Access-Control-Allow-Credentials', 'true');
   
 	return response;
   }
   
   function handleOptions(request) {
-	// Create a response for OPTIONS request with the necessary CORS headers
 	const headers = {
 	  'Access-Control-Allow-Origin': 'https://gym-punchcard.pages.dev',
 	  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-	  'Access-Control-Allow-Headers': 'Content-Type'
+	  'Access-Control-Allow-Headers': 'Content-Type',
+	  'Access-Control-Allow-Credentials': 'true',
 	};
 	return new Response(null, { headers });
   }
   
-  // Add this function to handle delete requests
-  async function handleDelete(request) {
-	const { logId } = await request.json();
-	const id = await getUserId(request);
-	const userData = await getUserData(id);
-  
-	// Find the entry to be deleted
-	const entryIndex = userData.history.findIndex(entry => entry.id === logId);
-	if (entryIndex === -1) {
-	  return new Response('Log entry not found', { status: 404 });
-	}
-  
-	const entry = userData.history[entryIndex];
-  
-	// Update counts based on the type of entry
-	if (entry.type === 'punch') {
-	  userData.currentPunches -= 1;
-	  if (userData.currentPunches < 0 && userData.unredeemedPunchcards > 0) {
-		userData.unredeemedPunchcards -= 1;
-		userData.currentPunches += 5;
-	  }
-	} else if (entry.type === 'reward') {
-	  userData.redeemedPunchcards -= 1;
-	}
-  
-	// Remove the entry from history
-	userData.history.splice(entryIndex, 1);
-  
-	// Save the updated user data
-	await PUNCHCARDS.put(id, JSON.stringify(userData));
-  
-	return new Response('Log entry deleted');
-  }  
-  
-  // Existing functions...
   async function handlePunch(request) {
 	const { activity } = await request.json();
 	const id = await getUserId(request);
@@ -101,13 +67,12 @@ addEventListener('fetch', event => {
 	  userData.currentPunches = 0;
 	}
   
-	// Log activity in history
 	if (!userData.history) {
 	  userData.history = [];
 	}
 	userData.history.push({ id: Date.now().toString(), type: 'punch', activity, date: new Date().toISOString() });
   
-	await PUNCHCARDS.put(id, JSON.stringify(userData));
+	await PUNCHCARDS.put(`user_${id}_data`, JSON.stringify(userData));
   
 	return new Response(`Punch added! Current punches: ${userData.currentPunches}`);
   }
@@ -124,13 +89,12 @@ addEventListener('fetch', event => {
 	userData.unredeemedPunchcards -= 1;
 	userData.redeemedPunchcards += 1;
   
-	// Log reward in history
 	if (!userData.history) {
 	  userData.history = [];
 	}
 	userData.history.push({ id: Date.now().toString(), type: 'reward', reward, date: new Date().toISOString() });
   
-	await PUNCHCARDS.put(id, JSON.stringify(userData));
+	await PUNCHCARDS.put(`user_${id}_data`, JSON.stringify(userData));
   
 	return new Response('Reward claimed! Punchcard reset.');
   }
@@ -153,14 +117,59 @@ addEventListener('fetch', event => {
 	});
   }
   
-  async function getUserId(request) {
-	// Implement a way to identify users, e.g., via cookies, headers, etc.
-	// For simplicity, let's use a fixed user ID.
-	return 'user-123';
+  async function handleDelete(request) {
+	const { logId } = await request.json();
+	const id = await getUserId(request);
+	const userData = await getUserData(id);
+  
+	const entryIndex = userData.history.findIndex(entry => entry.id === logId);
+	if (entryIndex === -1) {
+	  return new Response('Log entry not found', { status: 404 });
+	}
+  
+	const entry = userData.history[entryIndex];
+  
+	if (entry.type === 'punch') {
+	  userData.currentPunches -= 1;
+	  if (userData.currentPunches < 0 && userData.unredeemedPunchcards > 0) {
+		userData.unredeemedPunchcards -= 1;
+		userData.currentPunches += 5;
+	  }
+	} else if (entry.type === 'reward') {
+	  userData.redeemedPunchcards -= 1;
+	}
+  
+	userData.history.splice(entryIndex, 1);
+  
+	await PUNCHCARDS.put(`user_${id}_data`, JSON.stringify(userData));
+  
+	return new Response('Log entry deleted');
   }
   
-  async function getUserData(id) {
-	const userData = await PUNCHCARDS.get(id);
+  // **Get the user ID from the request cookies**
+  async function getUserId(request) {
+	const cookieHeader = request.headers.get('Cookie');
+	if (!cookieHeader) {
+	  throw new Error('No cookies found');
+	}
+  
+	const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
+	  const [key, value] = cookie.split('=').map(c => c.trim());
+	  acc[key] = value;
+	  return acc;
+	}, {});
+  
+	const userId = cookies['userId'];
+	if (!userId) {
+	  throw new Error('No userId cookie found');
+	}
+  
+	return userId;
+  }
+  
+  // **Get user data from KV store**
+  async function getUserData(userId) {
+	const userData = await PUNCHCARDS.get(`user_${userId}_data`);
 	return userData ? JSON.parse(userData) : { currentPunches: 0, unredeemedPunchcards: 0, redeemedPunchcards: 0, history: [] };
   }
   
