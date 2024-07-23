@@ -1,77 +1,68 @@
-// Generate a unique identifier
-function generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  }
+// scripts.js
+
+// Define icon mappings for activities and rewards
+const activityIcons = {
+    "walk": "🚶‍♀️",
+    "run": "🏃‍♀️",
+    "gym": "🏋️‍♀️",
+    "hike": "🥾",
+    "pickleball": "🏓",
+    "yoga": "🧘‍♀️",
+    "pilates": "🤸‍♀️",
+    "dance": "💃",
+    "snowboarding": "🏂",
+    "stairs": "🪜",
+    "other": "❓",
+    "default": "🏃‍♂️" // Default icon for activities not explicitly listed
+  };
   
-  // Set a cookie
-  function setCookie(name, value, days) {
-    var expires = "";
-    if (days) {
-      var date = new Date();
-      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-      expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + (value || "") + expires + "; path=/";
-  }
+  const rewardIcons = {
+    "pie": "🥧",
+    "cake": "🎂",
+    "ice cream": "🍦",
+    "brownies": "🍫",
+    "cookies": "🍪",
+    "boba": "🧋",
+    "candy": "🍬",
+    "smoothies": "🥤",
+    "other": "❓",
+    "default": "🎉" // Default icon for rewards not explicitly listed
+  };
   
-  // Get a cookie
-  function getCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-      var c = ca[i];
-      while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-    }
-    return null;
-  }
+  // Most popular activities
+  const popularActivities = ["gym", "pickleball", "yoga"];
+  // All activities including the popular ones
+  const allActivities = ["walk", "run", "gym", "hike", "pickleball", "yoga", "pilates", "dance", "snowboarding", "stairs"];
   
-  // Check if user ID exists, if not, generate one
-  let userId = getCookie('userId');
-  if (!userId) {
-    userId = generateUUID();
-    setCookie('userId', userId, 365); // Set cookie for 1 year
-  }
+  const allRewards = ["pie", "cake", "ice cream", "brownies", "cookies", "boba", "candy", "smoothies"];
   
-  // Fetch user name on load (if implemented)
-  // fetch('https://my-gym-punchcard.kathyyliao.workers.dev/getUserName', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json'
-  //   },
-  //   body: JSON.stringify({ userId }),
-  //   credentials: 'include' // Add this line
-  // })
-  // .then(response => response.json())
-  // .then(data => {
-  //   if (data.userName) {
-  //     document.getElementById('userNameHeader').textContent = `${data.userName}'s Workout Punchcard`;
-  //   } else {
-  //     document.getElementById('userNameInput').style.display = 'block';
-  //   }
-  // })
-  // .catch(error => console.error('Error fetching user name:', error));
+  let activityChart; // Global variable to store the chart instance
   
   document.addEventListener('DOMContentLoaded', () => {
     updateStatus();
     fetchHistory();
     populateActivityButtons();
     populateDropdowns();
+    openTab(null, 'history'); // Default to the History tab
   });
   
   function updateStatus() {
-    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/status', {
-      method: 'GET',
-      credentials: 'include' // Add this line
-    })
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/status')
       .then(response => response.json())
       .then(data => {
         document.getElementById('currentPunches').innerText = `Current Punches: ${data.currentPunches}`;
         document.getElementById('unredeemedPunchcards').innerText = `Unredeemed Punchcards: ${data.unredeemedPunchcards}`;
         document.getElementById('redeemedPunchcards').innerText = `Redeemed Punchcards: ${data.redeemedPunchcards}`;
+        const redeemButton = document.querySelector('button[onclick="redeemReward()"]');
+        if (data.unredeemedPunchcards > 0) {
+          redeemButton.disabled = false;
+          redeemButton.style.backgroundColor = '#00796b';
+          redeemButton.style.cursor = 'pointer';
+        } else {
+          redeemButton.disabled = true;
+          redeemButton.style.backgroundColor = '#cccccc';
+          redeemButton.style.cursor = 'not-allowed';
+        }
       })
       .catch(error => console.error('Error fetching status:', error));
   }
@@ -86,14 +77,13 @@ function generateUUID() {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ activity }),
-      credentials: 'include' // Add this line
+      body: JSON.stringify({ activity })
     })
-      .then(() => {
-        updateStatus();
-        fetchHistory();
-      })
-      .catch(error => console.error('Error adding punch:', error));
+    .then(() => {
+      updateStatus();
+      fetchHistory(); // Ensure fetchHistory is called to update the chart
+    })
+    .catch(error => console.error('Error adding punch:', error));
   }
   
   window.redeemReward = function redeemReward() {
@@ -106,39 +96,36 @@ function generateUUID() {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ reward }),
-      credentials: 'include' // Add this line
+      body: JSON.stringify({ reward })
     })
-      .then(() => {
-        updateStatus();
-        fetchHistory();
-      })
-      .catch(error => console.error('Error redeeming reward:', error));
+    .then(() => {
+      updateStatus();
+      fetchHistory(); // Ensure fetchHistory is called to update the chart
+    })
+    .catch(error => console.error('Error redeeming reward:', error));
   }
   
+  // Function to log the activity directly
   window.fillActivity = function fillActivity(activity) {
     fetch('https://my-gym-punchcard.kathyyliao.workers.dev/punch', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ activity }),
-      credentials: 'include' // Add this line
+      body: JSON.stringify({ activity })
     })
-      .then(() => {
-        updateStatus();
-        fetchHistory();
-      })
-      .catch(error => console.error('Error adding punch:', error));
+    .then(() => {
+      updateStatus();
+      fetchHistory(); // Ensure fetchHistory is called to update the chart
+    })
+    .catch(error => console.error('Error adding punch:', error));
   }
   
   function fetchHistory() {
-    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/history', {
-      method: 'GET',
-      credentials: 'include' // Add this line
-    })
+    fetch('https://my-gym-punchcard.kathyyliao.workers.dev/history')
       .then(response => response.json())
       .then(history => {
+        console.log('Fetched history:', history); // Debugging log
         const historyList = document.getElementById('historyList');
         historyList.innerHTML = '';
         history.reverse(); // Reverse the history array to show newest first
@@ -208,14 +195,13 @@ function generateUUID() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ logId, newActivity }),
-        credentials: 'include' // Add this line
+        body: JSON.stringify({ logId, newActivity })
       })
-        .then(() => {
-          updateStatus();
-          fetchHistory();
-        })
-        .catch(error => console.error('Error editing log:', error));
+      .then(() => {
+        updateStatus();
+        fetchHistory(); // Ensure fetchHistory is called to update the chart
+      })
+      .catch(error => console.error('Error editing log:', error));
     }
   }
   
@@ -225,14 +211,13 @@ function generateUUID() {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ logId }),
-      credentials: 'include' // Add this line
+      body: JSON.stringify({ logId })
     })
-      .then(() => {
-        updateStatus();
-        fetchHistory();
-      })
-      .catch(error => console.error('Error deleting log:', error));
+    .then(() => {
+      updateStatus();
+      fetchHistory(); // Ensure fetchHistory is called to update the chart
+    })
+    .catch(error => console.error('Error deleting log:', error));
   }
   
   function populateActivityButtons() {
@@ -294,30 +279,55 @@ function generateUUID() {
       }
     });
   
-    const labels = Object.keys(activityCounts);
-    const data = Object.values(activityCounts);
+    const sortedActivities = Object.keys(activityCounts).sort((a, b) => activityCounts[b] - activityCounts[a]);
+    const labels = sortedActivities.map(activity => `${activity} (${activityCounts[activity]})`);
+    const data = sortedActivities.map(activity => activityCounts[activity]);
   
     const ctx = document.getElementById('activityChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Activity Count',
-          data: data,
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
+  
+    if (activityChart) {
+      activityChart.data.labels = labels;
+      activityChart.data.datasets[0].data = data;
+      activityChart.update();
+    } else {
+      activityChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Activity Count',
+            data: data,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1 // Ensure only whole numbers are displayed
+              }
+            }
           }
         }
-      }
-    });
+      });
+    }
   }
   
+  function openTab(evt, tabName) {
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => content.style.display = 'none');
+  
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => button.classList.remove('active'));
+  
+    document.getElementById(tabName).style.display = 'block';
+    if (evt) {
+      evt.currentTarget.classList.add('active');
+    } else {
+      document.querySelector(`.tab-button[onclick="openTab(event, '${tabName}')"]`).classList.add('active');
+    }
+  }
   
