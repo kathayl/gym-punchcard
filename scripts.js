@@ -1,5 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
   const userId = getUserIdFromUrl();
+  if (!userId) {
+    alert('User ID is missing in the URL');
+    return;
+  }
   updateStatus(userId);
   fetchHistory(userId);
   populateActivityButtons(userId);
@@ -164,4 +168,82 @@ function deleteLog(logId, userId) {
     fetchHistory(userId);
   })
   .catch(error => console.error('Error deleting log:', error));
+}
+
+function populateActivityButtons(userId) {
+  const activityButtonsContainer = document.getElementById('activityButtons');
+  activityButtonsContainer.innerHTML = '';
+  popularActivities.forEach(activity => {
+    const button = document.createElement('button');
+    button.innerHTML = `<span>${activityIcons[activity]}</span> ${activity.charAt(0).toUpperCase() + activity.slice(1)}`;
+    button.onclick = () => fillActivity(activity, userId);
+    activityButtonsContainer.appendChild(button);
+  });
+}
+
+function populateDropdowns(userId) {
+  const activityDropdown = document.getElementById('activityDropdown');
+  const rewardDropdown = document.getElementById('rewardDropdown');
+
+  allActivities.forEach(activity => {
+    if (!popularActivities.includes(activity)) {
+      const option = document.createElement('option');
+      option.value = activity;
+      option.text = `${activityIcons[activity]} ${activity.charAt(0).toUpperCase() + activity.slice(1)}`;
+      activityDropdown.appendChild(option);
+    }
+  });
+  const otherActivityOption = document.createElement('option');
+  otherActivityOption.value = 'other';
+  otherActivityOption.text = `${activityIcons["other"]} Other`;
+  activityDropdown.appendChild(otherActivityOption);
+
+  allRewards.forEach(reward => {
+    const option = document.createElement('option');
+    option.value = reward;
+    option.text = `${rewardIcons[reward]} ${reward.charAt(0).toUpperCase() + reward.slice(1)}`;
+    rewardDropdown.appendChild(option);
+  });
+  const otherRewardOption = document.createElement('option');
+  otherRewardOption.value = 'other';
+  otherRewardOption.text = `${rewardIcons["other"]} Other`;
+  rewardDropdown.appendChild(otherRewardOption);
+
+  activityDropdown.onchange = () => {
+    document.getElementById('activity').style.display = activityDropdown.value === 'other' ? 'block' : 'none';
+  }
+
+  rewardDropdown.onchange = () => {
+    document.getElementById('reward').style.display = rewardDropdown.value === 'other' ? 'block' : 'none';
+  }
+}
+
+function fillActivity(activity, userId) {
+  fetch(`https://your-app-url.com/punch?userId=${userId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ activity })
+  })
+  .then(() => {
+    updateStatus(userId);
+    fetchHistory(userId);
+  })
+  .catch(error => console.error('Error adding punch:', error));
+}
+
+function openTab(evt, tabName) {
+  const tabContents = document.querySelectorAll('.tab-content');
+  tabContents.forEach(content => content.style.display = 'none');
+
+  const tabButtons = document.querySelectorAll('.tab-button');
+  tabButtons.forEach(button => button.classList.remove('active'));
+
+  document.getElementById(tabName).style.display = 'block';
+  if (evt) {
+    evt.currentTarget.classList.add('active');
+  } else {
+    document.querySelector(`.tab-button[onclick="openTab(event, '${tabName}')"]`).classList.add('active');
+  }
 }
