@@ -76,7 +76,8 @@ window.addPunch = function addPunch() {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ activity })
+    body: JSON.stringify({ activity }),
+    credentials: 'include' // Ensure credentials are included
   })
   .then(() => {
     updateStatus();
@@ -95,29 +96,14 @@ window.redeemReward = function redeemReward() {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ reward })
+    body: JSON.stringify({ reward }),
+    credentials: 'include' // Ensure credentials are included
   })
   .then(() => {
     updateStatus();
     fetchHistory(); // Ensure fetchHistory is called to update the chart
   })
   .catch(error => console.error('Error redeeming reward:', error));
-}
-
-// Function to log the activity directly
-window.fillActivity = function fillActivity(activity) {
-  fetch('https://my-gym-punchcard.kathyyliao.workers.dev/punch', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ activity })
-  })
-  .then(() => {
-    updateStatus();
-    fetchHistory(); // Ensure fetchHistory is called to update the chart
-  })
-  .catch(error => console.error('Error adding punch:', error));
 }
 
 function fetchHistory() {
@@ -197,7 +183,8 @@ function editLog(logId, currentActivity) {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ logId, newActivity })
+      body: JSON.stringify({ logId, newActivity }),
+      credentials: 'include' // Ensure credentials are included
     })
     .then(() => {
       updateStatus();
@@ -213,7 +200,8 @@ function deleteLog(logId) {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ logId })
+    body: JSON.stringify({ logId }),
+    credentials: 'include' // Ensure credentials are included
   })
   .then(() => {
     updateStatus();
@@ -222,7 +210,6 @@ function deleteLog(logId) {
   .catch(error => console.error('Error deleting log:', error));
 }
 
-// Function to populate activity buttons
 function populateActivityButtons() {
   const activityButtonsContainer = document.getElementById('activityButtons');
   activityButtonsContainer.innerHTML = '';

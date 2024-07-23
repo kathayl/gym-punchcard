@@ -145,7 +145,6 @@ addEventListener('fetch', event => {
 	return new Response('Log entry deleted');
   }
   
-  // Ensure the user ID is retrieved from the request cookies
   async function getUserId(request) {
 	const cookieHeader = request.headers.get('Cookie');
 	if (!cookieHeader) {
@@ -166,7 +165,6 @@ addEventListener('fetch', event => {
 	return userId;
   }
   
-  // Ensure user data is retrieved from KV store
   async function getUserData(userId) {
 	const userData = await PUNCHCARDS.get(`user_${userId}_data`);
 	return userData ? JSON.parse(userData) : { currentPunches: 0, unredeemedPunchcards: 0, redeemedPunchcards: 0, history: [] };
