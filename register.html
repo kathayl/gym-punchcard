@@ -15,13 +15,20 @@
     document.getElementById('registrationForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = document.getElementById('nameInput').value;
-      const response = await fetch('/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name })
-      });
-      const userUrl = await response.text();
-      window.location.href = userUrl;
+      try {
+        const response = await fetch('/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const userUrl = await response.text();
+        window.location.href = userUrl;
+      } catch (error) {
+        console.error('Error during registration:', error);
+      }
     });
   </script>
 </body>

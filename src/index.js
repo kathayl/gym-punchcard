@@ -54,7 +54,7 @@ addEventListener('fetch', event => {
   async function handleRegister(request) {
 	const { name } = await request.json();
 	const userId = generateUniqueId(name);
-	const userUrl = `https://your-app-url.com/?userId=${userId}`;
+	const userUrl = `https://gym-punchcard.pages.dev/?userId=${userId}`;
 	return new Response(userUrl, { headers: { 'Content-Type': 'text/plain' } });
   }
   
