@@ -6,36 +6,56 @@ addEventListener('fetch', event => {
 	const url = new URL(request.url);
 	const path = url.pathname.split('/').filter(Boolean);
   
+	if (request.method === 'OPTIONS') {
+	  return handleOptions(request);
+	}
+  
+	let response;
 	if (path[0] === 'register' && request.method === 'POST') {
-	  return handleRegister(request);
+	  response = await handleRegister(request);
 	} else if (path[0] === 'reset' && request.method === 'POST') {
-	  return handleReset(request);
-	}
-  
-	// Add the user ID check for other routes
-	const userId = url.searchParams.get('userId');
-	if (!userId) {
-	  return new Response('User ID not provided', { status: 400 });
-	}
-  
-	if (path[0] === 'punch') {
-	  return handlePunch(request, userId);
-	} else if (path[0] === 'status') {
-	  return handleStatus(request, userId);
-	} else if (path[0] === 'history') {
-	  return handleHistory(request, userId);
-	} else if (path[0] === 'delete') {
-	  return handleDelete(request, userId);
+	  response = await handleReset(request);
 	} else {
-	  return new Response('Not found', { status: 404 });
+	  const userId = url.searchParams.get('userId');
+	  if (!userId) {
+		return new Response('User ID not provided', { status: 400 });
+	  }
+  
+	  if (path[0] === 'punch') {
+		response = await handlePunch(request, userId);
+	  } else if (path[0] === 'status') {
+		response = await handleStatus(request, userId);
+	  } else if (path[0] === 'history') {
+		response = await handleHistory(request, userId);
+	  } else if (path[0] === 'delete') {
+		response = await handleDelete(request, userId);
+	  } else {
+		response = new Response('Not found', { status: 404 });
+	  }
 	}
+  
+	// Ensure headers are added to every response
+	response.headers.set('Access-Control-Allow-Origin', '*');
+	response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+	response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  
+	return response;
+  }
+  
+  function handleOptions(request) {
+	const headers = {
+	  'Access-Control-Allow-Origin': '*',
+	  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+	  'Access-Control-Allow-Headers': 'Content-Type',
+	};
+	return new Response(null, { headers });
   }
   
   async function handleRegister(request) {
 	const { name } = await request.json();
 	const userId = generateUniqueId(name);
 	const userUrl = `https://your-app-url.com/?userId=${userId}`;
-	return new Response(userUrl);
+	return new Response(userUrl, { headers: { 'Content-Type': 'text/plain' } });
   }
   
   function generateUniqueId(name) {
@@ -47,7 +67,7 @@ addEventListener('fetch', event => {
 	const initialData = { currentPunches: 0, unredeemedPunchcards: 0, redeemedPunchcards: 0, history: [] };
 	await PUNCHCARDS.put(`user:${userId}:data`, JSON.stringify(initialData));
 	
-	return new Response('User data reset');
+	return new Response('User data reset', { headers: { 'Content-Type': 'text/plain' } });
   }
   
   async function handlePunch(request, userId) {
@@ -63,7 +83,7 @@ addEventListener('fetch', event => {
 	userData.history.push({ id: Date.now().toString(), type: 'punch', activity, date: new Date().toISOString() });
   
 	await PUNCHCARDS.put(`user:${userId}:data`, JSON.stringify(userData));
-	return new Response(`Punch added! Current punches: ${userData.currentPunches}`);
+	return new Response(`Punch added! Current punches: ${userData.currentPunches}`, { headers: { 'Content-Type': 'text/plain' } });
   }
   
   async function handleStatus(request, userId) {
@@ -104,7 +124,7 @@ addEventListener('fetch', event => {
 	userData.history.splice(entryIndex, 1);
   
 	await PUNCHCARDS.put(`user:${userId}:data`, JSON.stringify(userData));
-	return new Response('Log entry deleted');
+	return new Response('Log entry deleted', { headers: { 'Content-Type': 'text/plain' } });
   }
   
   async function getUserData(userId) {
