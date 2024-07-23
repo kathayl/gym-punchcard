@@ -12,7 +12,7 @@ body {
   
   .punchcard {
     background-color: #fff;
-    padding: 20px;
+    padding: 30px;
     border-radius: 15px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -21,7 +21,6 @@ body {
     height: 90vh; /* Adjust height to fit within viewport */
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Ensure content doesn't overflow the container */
   }
   
   @keyframes fadeIn {
@@ -31,17 +30,17 @@ body {
   
   .punchcard h1 {
     color: #00796b;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
   }
   
   .punchcard p {
     font-size: 1.2em;
-    margin: 5px 0;
+    margin: 10px 0;
     color: #004d40;
   }
   
   .punchcard button {
-    padding: 10px 20px;
+    padding: 12px 24px;
     font-size: 1em;
     color: #fff;
     background-color: #00796b;
@@ -58,13 +57,13 @@ body {
   .input-container {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
   }
   
   .input-container input, .input-container select {
     flex: 1;
-    margin-right: 5px;
-    padding: 10px;
+    margin-right: 10px;
+    padding: 12px;
     font-size: 1em;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -73,8 +72,8 @@ body {
   
   .input-container button {
     flex: 1;
-    margin-left: 5px;
-    padding: 10px;
+    margin-left: 10px;
+    padding: 12px;
     font-size: 1em;
     border-radius: 4px;
     box-sizing: border-box; /* Ensure padding is included in width calculation */
@@ -83,13 +82,13 @@ body {
   .activity-buttons {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
   }
   
   .activity-buttons button {
     flex: 1;
     margin: 5px;
-    padding: 10px;
+    padding: 12px;
     font-size: 1em;
     color: #fff;
     background-color: #00796b;
@@ -117,7 +116,7 @@ body {
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 4px;
-    padding: 10px;
+    padding: 12px;
     font-size: 1em;
     background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%204%205%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M2%200L0%202h4L2%200zM2%205L0%203h4L2%205z%22/%3E%3C/svg%3E');
     background-repeat: no-repeat;
@@ -125,46 +124,12 @@ body {
     background-size: 10px;
   }
   
-  .tab-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-  }
-  
-  .tab-button {
-    padding: 8px 16px;
-    font-size: 1em;
-    border: none;
-    background-color: #00796b;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    border-radius: 8px 8px 0 0;
-  }
-  
-  .tab-button:hover {
-    background-color: #004d40;
-  }
-  
-  .tab-button.active {
-    background-color: #004d40;
-  }
-  
-  .tab-content {
-    display: none;
-    flex: 1; /* Ensure the tab content takes the remaining space */
-    overflow-y: auto;
-    padding: 10px;
-  }
-  
-  .tab-content.active {
-    display: block;
-  }
-  
   #historyList {
     list-style-type: none;
     padding: 0;
     text-align: left;
+    overflow-y: auto;
+    height: calc(100% - 160px); /* Adjust height as needed */
   }
   
   #historyList li {
@@ -215,12 +180,47 @@ body {
   
   .history-header {
     font-size: 1.5em;
-    margin-top: 10px;
+    margin-top: 20px;
     text-align: center;
   }
   
   .icon {
     margin-right: 8px;
     vertical-align: middle; /* Ensure icon is vertically aligned with text */
+  }
+  
+  .tab-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .tab-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    background-color: #00796b;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .tab-button:hover {
+    background-color: #004d40;
+  }
+  
+  .tab-button.active {
+    background-color: #004d40;
+  }
+  
+  .tab-content {
+    display: none;
+    flex: 1; /* Ensure the tab content takes the remaining space */
+    overflow-y: auto;
+  }
+  
+  .tab-content.active {
+    display: block;
   }
   
