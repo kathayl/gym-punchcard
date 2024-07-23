@@ -6,11 +6,15 @@ addEventListener('fetch', event => {
 	const url = new URL(request.url);
 	const path = url.pathname.split('/').filter(Boolean);
   
+	console.log('Received request:', request.method, url.pathname);
+  
+	// Handle CORS preflight request
 	if (request.method === 'OPTIONS') {
 	  return handleOptions(request);
 	}
   
 	let response;
+  
 	if (path[0] === 'register' && request.method === 'POST') {
 	  response = await handleRegister(request);
 	} else if (path[0] === 'reset' && request.method === 'POST') {
@@ -39,6 +43,8 @@ addEventListener('fetch', event => {
 	response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 	response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
   
+	console.log('Sending response:', response.status);
+  
 	return response;
   }
   
@@ -52,10 +58,20 @@ addEventListener('fetch', event => {
   }
   
   async function handleRegister(request) {
-	const { name } = await request.json();
-	const userId = generateUniqueId(name);
-	const userUrl = `https://gym-punchcard.pages.dev/?userId=${userId}`;
-	return new Response(userUrl, { headers: { 'Content-Type': 'text/plain' } });
+	try {
+	  console.log('Handling register request');
+	  const { name } = await request.json();
+	  console.log('Register name:', name);
+	  const userId = generateUniqueId(name);
+	  const userUrl = `https://gym-punchcard.pages.dev/?userId=${userId}`;
+	  console.log('Generated user URL:', userUrl);
+	  return new Response(userUrl, {
+		headers: { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' }
+	  });
+	} catch (error) {
+	  console.error('Error handling register:', error);
+	  return new Response('Internal Server Error', { status: 500 });
+	}
   }
   
   function generateUniqueId(name) {
@@ -67,7 +83,7 @@ addEventListener('fetch', event => {
 	const initialData = { currentPunches: 0, unredeemedPunchcards: 0, redeemedPunchcards: 0, history: [] };
 	await PUNCHCARDS.put(`user:${userId}:data`, JSON.stringify(initialData));
 	
-	return new Response('User data reset', { headers: { 'Content-Type': 'text/plain' } });
+	return new Response('User data reset', { headers: { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' } });
   }
   
   async function handlePunch(request, userId) {
@@ -83,20 +99,20 @@ addEventListener('fetch', event => {
 	userData.history.push({ id: Date.now().toString(), type: 'punch', activity, date: new Date().toISOString() });
   
 	await PUNCHCARDS.put(`user:${userId}:data`, JSON.stringify(userData));
-	return new Response(`Punch added! Current punches: ${userData.currentPunches}`, { headers: { 'Content-Type': 'text/plain' } });
+	return new Response(`Punch added! Current punches: ${userData.currentPunches}`, { headers: { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' } });
   }
   
   async function handleStatus(request, userId) {
 	const userData = await getUserData(userId);
 	return new Response(JSON.stringify(userData), {
-	  headers: { 'Content-Type': 'application/json' }
+	  headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
 	});
   }
   
   async function handleHistory(request, userId) {
 	const userData = await getUserData(userId);
 	return new Response(JSON.stringify(userData.history || []), {
-	  headers: { 'Content-Type': 'application/json' }
+	  headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
 	});
   }
   
@@ -124,7 +140,7 @@ addEventListener('fetch', event => {
 	userData.history.splice(entryIndex, 1);
   
 	await PUNCHCARDS.put(`user:${userId}:data`, JSON.stringify(userData));
-	return new Response('Log entry deleted', { headers: { 'Content-Type': 'text/plain' } });
+	return new Response('Log entry deleted', { headers: { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' } });
   }
   
   async function getUserData(userId) {
